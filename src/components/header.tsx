@@ -24,9 +24,6 @@ const Header = () => {
           <SearchIcon />
           <InputBase placeholder="Rechercher" sx={{ ml: 1, flex: 1 }} inputProps={{ "aria-label": "search" }} />
         </Box>
-        <IconButton size="large" aria-label="Voir les notifications" color="inherit" sx={{ ml: 2 }}>
-          <NotificationsIcon />
-        </IconButton>
         <IconButton onClick={handleMenu} color="inherit">
           <Avatar alt="Photo de profil" src="/path/to/avatar.jpg" />
         </IconButton>

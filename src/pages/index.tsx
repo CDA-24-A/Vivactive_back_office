@@ -1,6 +1,8 @@
+import { Box } from "@mui/material";
+
 const Index = () => {
   return (
-    <div>
+    <Box sx={{ width: "100%" }}>
       <h1>Welcome to React.Js!</h1>
       <p>This is a simple React.Js application.</p>
       <p>This is a simple React.Js application.</p>
@@ -85,7 +87,7 @@ const Index = () => {
       <p>This is a simple React.Js application.</p>
       <p>This is a simple React.Js application.</p>
       <p>This is a simple React.Js application.</p>
-    </div>
+    </Box>
   );
 };
 export default Index;
