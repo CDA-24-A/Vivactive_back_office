@@ -1,0 +1,9 @@
+const Index = () => {
+  return (
+    <div>
+      <h1>Welcome to React.Js!</h1>
+      <p>This is a simple React.Js application.</p>
+    </div>
+  );
+};
+export default Index;
