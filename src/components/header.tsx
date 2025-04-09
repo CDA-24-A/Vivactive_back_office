@@ -1,7 +1,6 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, InputBase, IconButton, Box, Avatar, Menu, MenuItem } from "@mui/material";
+import { AppBar, Toolbar, InputBase, IconButton, Box, Avatar, Menu, MenuItem } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
