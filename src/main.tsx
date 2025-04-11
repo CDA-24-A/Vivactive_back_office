@@ -10,15 +10,15 @@ import { ThemeProvider } from "@mui/material";
 import theme from "./theme.ts";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <Header />
-        <div className="container-app">
-          <Navigation />
-          <App />
-        </div>
-      </BrowserRouter>
-    </ThemeProvider>
-  </StrictMode>
+  // <StrictMode>
+  <ThemeProvider theme={theme}>
+    <BrowserRouter>
+      <Header />
+      <div className="container-app">
+        <Navigation />
+        <App />
+      </div>
+    </BrowserRouter>
+  </ThemeProvider>
+  // </StrictMode>
 );
