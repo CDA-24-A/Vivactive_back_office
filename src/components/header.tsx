@@ -14,7 +14,7 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static" color="default" elevation={1} sx={{ width: "100%", top: 0 }}>
+    <AppBar position="static" color="default" elevation={1} sx={{ width: "100%", top: 0 }} id="header">
       <Toolbar>
         <Box sx={{ flexGrow: 1, margin: "20px 0px" }}>
           <img src="/logo.png" alt="Vivactive Logo" style={{ height: 45 }} />

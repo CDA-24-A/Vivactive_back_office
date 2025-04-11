@@ -4,19 +4,24 @@ import Paper from "@mui/material/Paper";
 interface propsGridCompornentType {
   rows: any[];
   columns: GridColDef[];
-  paginationModel: { page: number; pageSize: number };
+  loading?: boolean;
+  hideFooter?: boolean;
 }
 
-export default function GridComponent({ rows, columns, paginationModel }: propsGridCompornentType) {
+export default function GridComponent({ rows, columns, loading, hideFooter }: propsGridCompornentType) {
   return (
-    <Paper sx={{ height: "100%", width: "100%", flex: 1 }}>
+    <Paper sx={{ flex: 15, height: "70vh" }}>
       <DataGrid
         rows={rows}
         columns={columns}
-        initialState={{ pagination: { paginationModel } }}
-        pageSizeOptions={[5, 10]}
         checkboxSelection
         sx={{ border: 0 }}
+        localeText={{
+          noRowsLabel: "Aucune donnée",
+          noResultsOverlayLabel: "Aucun résultat trouvé",
+        }}
+        loading={loading}
+        hideFooter={hideFooter}
       />
     </Paper>
   );

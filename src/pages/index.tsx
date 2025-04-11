@@ -1,70 +1,139 @@
-import { Box, Typography } from "@mui/material";
+import useCitizens from "../hooks/useCitizens";
+import { useEffect } from "react";
+import { Box, Pagination, TablePagination, Typography } from "@mui/material";
 import GridComponent from "../components/Grid";
 import { GridColDef } from "@mui/x-data-grid";
+import Button from "@mui/material/Button";
+import { useState } from "react";
+import { Citizen, CitizenAdd, Citizens } from "../types/citizen";
+import ErrorComponent from "../components/Error";
+import HeaderGrid from "../components/HeaderGrid";
+import ModalEdition, { FieldConfig } from "../components/ModalEdition";
+import { set } from "react-hook-form";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
-  { field: "firstName", headerName: "First name", width: 130 },
-  { field: "lastName", headerName: "Last name", width: 130 },
+  { field: "name", headerName: "Prénom", width: 130 },
+  { field: "surname", headerName: "Nom", width: 130 },
   {
-    field: "age",
-    headerName: "Age",
-    type: "number",
-    width: 90,
+    field: "email",
+    headerName: "Mail",
+    width: 250,
   },
   {
     field: "fullName",
-    headerName: "Full name",
-    description: "This column has a value getter and is not sortable.",
+    headerName: "Nom complet",
     sortable: false,
     width: 160,
-    valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    valueGetter: (value, row) => `${row.firstName || ""} ${row.name || ""}`,
+  },
+  {
+    field: "role",
+    headerName: "Rôle",
+    width: 160,
+    valueGetter: (value: { name: string }) => `${value.name}`,
   },
 ];
 
-const rows = [
-  { id: 1, lastName: "Langlois", firstName: "Benjamin", age: 22 },
-  { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
-  { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45 },
-  { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
-  { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
-  { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
-  { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
-  { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
-  { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 10, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 11, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 12, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 13, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 14, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 15, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 16, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 17, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 18, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 19, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 20, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 21, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 22, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 23, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 24, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 25, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 26, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 27, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 28, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 29, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 30, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  { id: 31, lastName: "Roxie", firstName: "Harvey", age: 65 },
-];
-
-const paginationModel = { page: 0, pageSize: 15 };
-
 const Index = () => {
+  const { fetchCitizens, citizens, loading, error, createCitizen } = useCitizens();
+  const [open, setOpen] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(10);
+  const [count, setCount] = useState<number>(1);
+
+  const createCitizenFormConfig: FieldConfig[] = [
+    {
+      name: "name",
+      label: "Nom",
+      type: "text",
+      defaultValue: "",
+      validation: { required: "Le nom est requis" },
+    },
+    {
+      name: "surname",
+      label: "Prénom",
+      type: "text",
+      defaultValue: "",
+      validation: { required: "Le prénom est requis" },
+    },
+    {
+      name: "email",
+      label: "Email",
+      type: "email",
+      defaultValue: "",
+      validation: {
+        required: "L'email est requis",
+        pattern: {
+          value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+          message: "L'email n'est pas valide",
+        },
+      },
+    },
+    {
+      name: "password",
+      label: "Mot de passe",
+      type: "password",
+      defaultValue: "",
+      validation: { required: "Le mot de passe est requis" },
+    },
+    {
+      name: "roleId",
+      label: "Role ID",
+      type: "text",
+      defaultValue: "",
+      validation: {}, // Champ optionnel, pas de règle "required"
+    },
+  ];
+
+  useEffect(() => {
+    fetchCitizens({ page: page, perPage: perPage });
+  }, [perPage, page]);
+
+  useEffect(() => {
+    console.log(citizens.total);
+
+    console.log(perPage);
+
+    const totalCount = Math.ceil(citizens.total / perPage);
+    setCount(totalCount);
+  }, [perPage, citizens]);
+
+  const handleSubmitClick = (data: Omit<Citizen, "id">) => {
+    createCitizen(data);
+    setOpen(false);
+  };
+
   return (
-    <Box sx={{ width: "100%", display: "flex", flexDirection: "column", margin: "20px 0px" }}>
-      <Typography variant="h1" sx={{ paddingBottom: "10px" }}>
-        Catégories
-      </Typography>
-      <GridComponent rows={rows} columns={columns} paginationModel={paginationModel} />
+    <Box sx={{ width: "100%", display: "flex", flexDirection: "column", height: "100%" }}>
+      {error && <ErrorComponent errorMessage={error?.message} />}
+      {!loading && !error && (
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+          <HeaderGrid title="Liste des citoyens" onAddClick={() => setOpen(true)} />
+          <GridComponent rows={citizens.data} columns={columns} loading={loading} hideFooter={true} />
+          <TablePagination
+            component="div"
+            count={count}
+            page={page}
+            onPageChange={(event, newPage) => {
+              setPage(newPage + 1);
+            }}
+            rowsPerPage={perPage}
+            onRowsPerPageChange={(data) => {
+              setPerPage(parseInt(data.target.value));
+            }}
+            labelRowsPerPage="Nombre de ligne "
+            sx={{ marginTop: "20px", flex: 1 }}
+          />
+          <ModalEdition
+            open={open}
+            onClose={() => setOpen(false)}
+            title="Ajouter un citoyen"
+            fields={createCitizenFormConfig}
+            onSubmit={(data) => handleSubmitClick(data)}
+          />
+        </Box>
+      )}
     </Box>
   );
 };
