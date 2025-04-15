@@ -36,6 +36,74 @@ const columns: GridColDef[] = [
 ];
 
 const Index = () => {
+  const { fetchCitizens, citizens, loading, error, createCitizen } = useCitizens();
+  const [open, setOpen] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(10);
+  const [count, setCount] = useState<number>(1);
+
+  const createCitizenFormConfig: FieldConfig[] = [
+    {
+      name: "name",
+      label: "Nom",
+      type: "text",
+      defaultValue: "",
+      validation: { required: "Le nom est requis" },
+    },
+    {
+      name: "surname",
+      label: "Prénom",
+      type: "text",
+      defaultValue: "",
+      validation: { required: "Le prénom est requis" },
+    },
+    {
+      name: "email",
+      label: "Email",
+      type: "email",
+      defaultValue: "",
+      validation: {
+        required: "L'email est requis",
+        pattern: {
+          value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+          message: "L'email n'est pas valide",
+        },
+      },
+    },
+    {
+      name: "password",
+      label: "Mot de passe",
+      type: "password",
+      defaultValue: "",
+      validation: { required: "Le mot de passe est requis" },
+    },
+    {
+      name: "roleId",
+      label: "Role ID",
+      type: "text",
+      defaultValue: "",
+      validation: {}, // Champ optionnel, pas de règle "required"
+    },
+  ];
+
+  useEffect(() => {
+    fetchCitizens({ page: page, perPage: perPage });
+  }, [perPage, page]);
+
+  useEffect(() => {
+    console.log(citizens.total);
+
+    console.log(perPage);
+
+    const totalCount = Math.ceil(citizens.total / perPage);
+    setCount(totalCount);
+  }, [perPage, citizens]);
+
+  const handleSubmitClick = (data: Omit<Citizen, "id">) => {
+    createCitizen(data);
+    setOpen(false);
+  };
+
   return (
     <Box sx={{ width: "100%", display: "flex", flexDirection: "column", height: "100%" }}>
       {error && <ErrorComponent errorMessage={error?.message} />}
