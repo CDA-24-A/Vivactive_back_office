@@ -4,8 +4,10 @@ export interface Citizen {
     id: number;
     name: string;
     email: string;
-    firstName: string;
+    surname: string;
+    password: string;
     role: Role
+    roleId: string
   }
 
 export interface CitizenAdd

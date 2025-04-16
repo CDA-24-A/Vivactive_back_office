@@ -11,22 +11,24 @@ export interface FieldConfig {
   validation?: Record<string, any>;
 }
 
-interface GenericModalProps<T> {
+interface GenericModalProps {
   open: boolean;
   onClose: () => void;
   title: string;
   fields: FieldConfig[];
   onSubmit: (data: any) => void;
-  initialData?: T;
+  initialData?: any;
 }
 
-const GenericModal: React.FC<GenericModalProps<T>> = ({ open, onClose, title, onSubmit, fields, initialData }) => {
+const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, onSubmit, fields, initialData }) => {
   const { handleSubmit, control, reset } = useForm({
     defaultValues: initialData || {},
   });
 
   useEffect(() => {
-    reset(initialData || {}); // Remplit le formulaire avec les nouvelles valeurs
+    console.log("Initial data:", initialData);
+
+    reset(initialData?.row || {});
   }, [initialData, reset]);
 
   return (
@@ -58,6 +60,7 @@ const GenericModal: React.FC<GenericModalProps<T>> = ({ open, onClose, title, on
         </form>
       </DialogContent>
       <DialogActions>
+        <Button variant="danger">Supprimer</Button>
         <Button onClick={onClose} color="secondary">
           Annuler
         </Button>

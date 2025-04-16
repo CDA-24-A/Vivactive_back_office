@@ -8,7 +8,7 @@ interface UseCitizensReturn {
   error: Error | null;
   fetchCitizens: ({page, perPage}: {page?: number, perPage?: number}) => Promise<void>;
   createCitizen: (newCitizen: Omit<Citizen, 'id'>) => Promise<void>;
-  // updateCitizen: (id: number, updatedFields: Partial<Citizen>) => Promise<void>;
+  updateCitizen: (id: number, updatedFields: Partial<Citizen>) => Promise<void>;
   // deleteCitizen: (id: number) => Promise<void>;
 }
 
@@ -55,23 +55,21 @@ const useCitizens = (): UseCitizensReturn => {
   };
 
   // Mettre à jour un citoyen
-  // const updateCitizen = async (id: number, updatedFields: Partial<Citizen>) => {
-  //   setError(null);
-  //   try {
-  //     const res = await fetch(`${baseUrl}/citizen/${id}`, {
-  //       method: 'PUT',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify(updatedFields)
-  //     });
-  //     if (!res.ok) throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
-  //     const updatedCitizen: Citizen = await res.json();
-  //     setCitizens((prev) =>
-  //       prev.map((citizen) => (citizen.id === id ? updatedCitizen : citizen))
-  //     );
-  //   } catch (err: any) {
-  //     setError(err);
-  //   }
-  // };
+  const updateCitizen = async (id: number, updatedFields: Partial<Citizen>) => {
+    setError(null);
+    try {
+      const res = await fetch(`${baseUrl}/citizen/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedFields)
+      });
+      if (!res.ok) throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
+      const updatedCitizen: CitizenAdd = await res.json();
+      setCitizens((prev) => ({data: prev.data.map((citizen) => (citizen.id === id ? updatedCitizen.data : citizen)), message: updatedCitizen.message, total: prev.total}));
+    } catch (err: any) {
+      setError(err);
+    }
+  };
 
   // Supprimer un citoyen
   // const deleteCitizen = async (id: number) => {
@@ -93,7 +91,7 @@ const useCitizens = (): UseCitizensReturn => {
     error,
     fetchCitizens,
     createCitizen,
-    // updateCitizen,
+    updateCitizen,
     // deleteCitizen
   };
 };

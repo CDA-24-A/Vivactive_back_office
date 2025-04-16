@@ -1,16 +1,14 @@
 import useCitizens from "../hooks/useCitizens";
 import { useEffect } from "react";
-import { Box, FormControl, InputLabel, Menu, MenuItem, Pagination, Select, TablePagination, Typography } from "@mui/material";
+import { Box, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import { useState } from "react";
-import { Citizen, CitizenAdd, Citizens } from "../types/citizen";
+import { Citizen } from "../types/citizen";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
-import { set } from "react-hook-form";
-import { Form } from "react-router-dom";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -37,7 +35,7 @@ const columns: GridColDef[] = [
 ];
 
 const Index = () => {
-  const { fetchCitizens, citizens, loading, error, createCitizen } = useCitizens();
+  const { fetchCitizens, citizens, loading, error, createCitizen, updateCitizen } = useCitizens();
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(20);
@@ -102,8 +100,13 @@ const Index = () => {
     setOpen(true);
   };
 
-  const handleSubmitClick = (data: Omit<Citizen, "id">) => {
-    createCitizen(data);
+  const handleSubmitClick = (data: Citizen) => {
+    console.log("Data submitted:", data);
+    if (data.id) {
+      updateCitizen(data.id, { ...data, roleId: "7d725762-d488-4238-9414-cc70ec24a6f5" });
+    } else {
+      createCitizen(data);
+    }
     setOpen(false);
   };
 
