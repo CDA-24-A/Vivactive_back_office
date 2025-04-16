@@ -1,5 +1,6 @@
 // theme.ts
 import { createTheme } from '@mui/material/styles';
+import { frFR } from '@mui/material/locale';
 
 const theme = createTheme({
   palette: {
@@ -58,6 +59,7 @@ const theme = createTheme({
       },
     }
   },
-});
+  
+},frFR);
 
 export default theme;

@@ -22,7 +22,7 @@ const useCitizens = (): UseCitizensReturn => {
   const [error, setError] = useState<Error | null>(null);
 
   // Récupérer la liste des citoyens
-  const fetchCitizens = async ({page, perPage}: {page?: number, perPage?: number}) => {
+  const fetchCitizens = async ({page, perPage}: {page?: number, perPage?: number}) => {    
     setLoading(true);
     setError(null);
     try {

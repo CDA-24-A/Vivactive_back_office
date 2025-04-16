@@ -1,6 +1,6 @@
 import useCitizens from "../hooks/useCitizens";
 import { useEffect } from "react";
-import { Box, Pagination, TablePagination, Typography } from "@mui/material";
+import { Box, FormControl, InputLabel, Menu, MenuItem, Pagination, Select, TablePagination, Typography } from "@mui/material";
 import GridComponent from "../components/Grid";
 import { GridColDef } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
@@ -10,6 +10,7 @@ import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { set } from "react-hook-form";
+import { Form } from "react-router-dom";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -39,7 +40,7 @@ const Index = () => {
   const { fetchCitizens, citizens, loading, error, createCitizen } = useCitizens();
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
-  const [perPage, setPerPage] = useState<number>(10);
+  const [perPage, setPerPage] = useState<number>(20);
   const [count, setCount] = useState<number>(1);
 
   const createCitizenFormConfig: FieldConfig[] = [
@@ -91,10 +92,6 @@ const Index = () => {
   }, [perPage, page]);
 
   useEffect(() => {
-    console.log(citizens.total);
-
-    console.log(perPage);
-
     const totalCount = Math.ceil(citizens.total / perPage);
     setCount(totalCount);
   }, [perPage, citizens]);
@@ -111,20 +108,47 @@ const Index = () => {
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
           <HeaderGrid title="Liste des citoyens" onAddClick={() => setOpen(true)} />
           <GridComponent rows={citizens.data} columns={columns} loading={loading} hideFooter={true} />
-          <TablePagination
-            component="div"
-            count={count}
-            page={page}
-            onPageChange={(event, newPage) => {
-              setPage(newPage + 1);
-            }}
-            rowsPerPage={perPage}
-            onRowsPerPageChange={(data) => {
-              setPerPage(parseInt(data.target.value));
-            }}
-            labelRowsPerPage="Nombre de ligne "
-            sx={{ marginTop: "20px", flex: 1 }}
-          />
+          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginTop: "20px" }}>
+            <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "flex", flexDirection: "row" }}>
+              <InputLabel>Ligne par page</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={count}
+                label="Ligne par page"
+                onChange={(data: any) => {
+                  setPerPage(parseInt(data.target.value, 10));
+                  setPage(0);
+                }}
+              >
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={25}>25</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+              </Select>
+            </FormControl>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Button
+                onClick={() => {
+                  setPage(page - 1);
+                }}
+              >
+                -
+              </Button>
+              <Typography>
+                {page} sur {count}
+              </Typography>
+              <Button
+                onClick={() => {
+                  setPage(page + 1);
+                }}
+                disabled={page === count - 1}
+              >
+                +
+              </Button>
+            </Box>
+          </Box>
+
           <ModalEdition
             open={open}
             onClose={() => setOpen(false)}
