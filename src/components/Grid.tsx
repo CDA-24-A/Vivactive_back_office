@@ -1,4 +1,4 @@
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridCallbackDetails, GridColDef, GridRowParams, MuiEvent } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 
 interface propsGridCompornentType {
@@ -6,9 +6,10 @@ interface propsGridCompornentType {
   columns: GridColDef[];
   loading?: boolean;
   hideFooter?: boolean;
+  onRowDoubleClick?: (params: GridRowParams, event: MuiEvent, details: GridCallbackDetails) => void;
 }
 
-export default function GridComponent({ rows, columns, loading, hideFooter }: propsGridCompornentType) {
+export default function GridComponent({ rows, columns, loading, hideFooter, onRowDoubleClick }: propsGridCompornentType) {
   return (
     <Paper sx={{ flex: 15, height: "70vh" }}>
       <DataGrid
@@ -22,6 +23,7 @@ export default function GridComponent({ rows, columns, loading, hideFooter }: pr
         }}
         loading={loading}
         hideFooter={hideFooter}
+        onRowDoubleClick={onRowDoubleClick}
       />
     </Paper>
   );

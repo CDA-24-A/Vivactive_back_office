@@ -2,7 +2,7 @@ import useCitizens from "../hooks/useCitizens";
 import { useEffect } from "react";
 import { Box, Pagination, TablePagination, Typography } from "@mui/material";
 import GridComponent from "../components/Grid";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import { useState } from "react";
 import { Citizen, CitizenAdd, Citizens } from "../types/citizen";
@@ -41,6 +41,7 @@ const Index = () => {
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [count, setCount] = useState<number>(1);
+  const [formData, setFormData] = useState<GridRowParams | null>(null);
 
   const createCitizenFormConfig: FieldConfig[] = [
     {
@@ -99,6 +100,11 @@ const Index = () => {
     setCount(totalCount);
   }, [perPage, citizens]);
 
+  const handleRowDoubleClick = (rowData: any) => {
+    setFormData(rowData);
+    setOpen(true);
+  };
+
   const handleSubmitClick = (data: Omit<Citizen, "id">) => {
     createCitizen(data);
     setOpen(false);
@@ -110,7 +116,15 @@ const Index = () => {
       {!loading && !error && (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
           <HeaderGrid title="Liste des citoyens" onAddClick={() => setOpen(true)} />
-          <GridComponent rows={citizens.data} columns={columns} loading={loading} hideFooter={true} />
+          <GridComponent
+            rows={citizens.data}
+            columns={columns}
+            loading={loading}
+            hideFooter={true}
+            onRowDoubleClick={(params) => {
+              handleRowDoubleClick(params);
+            }}
+          />
           <TablePagination
             component="div"
             count={count}
@@ -131,6 +145,7 @@ const Index = () => {
             title="Ajouter un citoyen"
             fields={createCitizenFormConfig}
             onSubmit={(data) => handleSubmitClick(data)}
+            initialData={formData}
           />
         </Box>
       )}
