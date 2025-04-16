@@ -1,5 +1,5 @@
 // GenericModal.tsx
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 
@@ -11,16 +11,23 @@ export interface FieldConfig {
   validation?: Record<string, any>;
 }
 
-interface GenericModalProps {
+interface GenericModalProps<T> {
   open: boolean;
   onClose: () => void;
   title: string;
   fields: FieldConfig[];
   onSubmit: (data: any) => void;
+  initialData?: T;
 }
 
-const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, onSubmit, fields }) => {
-  const { handleSubmit, control } = useForm();
+const GenericModal: React.FC<GenericModalProps<T>> = ({ open, onClose, title, onSubmit, fields, initialData }) => {
+  const { handleSubmit, control, reset } = useForm({
+    defaultValues: initialData || {},
+  });
+
+  useEffect(() => {
+    reset(initialData || {}); // Remplit le formulaire avec les nouvelles valeurs
+  }, [initialData, reset]);
 
   return (
     <Dialog open={open} onClose={onClose}>

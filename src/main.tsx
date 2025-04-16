@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
-import Header from "./components/Header.tsx";
+import Header from "./components/header.tsx";
 import Navigation from "./components/Navigation.tsx";
 import { ThemeProvider } from "@mui/material";
 
