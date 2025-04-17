@@ -9,6 +9,7 @@ import { Citizen } from "../types/citizen";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
+import { useDebounce } from "../hooks/useDebounce";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -35,12 +36,16 @@ const columns: GridColDef[] = [
 ];
 
 const Index = () => {
-  const { fetchCitizens, citizens, loading, error, createCitizen, updateCitizen } = useCitizens();
+  const { fetchCitizens, citizens, loading, error, createCitizen, updateCitizen, deleteCitizen } = useCitizens();
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
-  const [perPage, setPerPage] = useState<number>(20);
+  const [perPage, setPerPage] = useState<number>(10);
   const [count, setCount] = useState<number>(1);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
+  const [search, setSearch] = useState<string>("");
+  const [citizensFiltered, setCitiensFiltered] = useState<Citizen[]>([]);
+
+  const debouncedSearch = useDebounce(search, 500);
 
   const createCitizenFormConfig: FieldConfig[] = [
     {
@@ -49,6 +54,7 @@ const Index = () => {
       type: "text",
       defaultValue: "",
       validation: { required: "Le nom est requis" },
+      showOn: "always",
     },
     {
       name: "surname",
@@ -56,6 +62,7 @@ const Index = () => {
       type: "text",
       defaultValue: "",
       validation: { required: "Le prénom est requis" },
+      showOn: "always",
     },
     {
       name: "email",
@@ -69,6 +76,7 @@ const Index = () => {
           message: "L'email n'est pas valide",
         },
       },
+      showOn: "always",
     },
     {
       name: "password",
@@ -76,13 +84,15 @@ const Index = () => {
       type: "password",
       defaultValue: "",
       validation: { required: "Le mot de passe est requis" },
+      showOn: "create",
     },
     {
       name: "roleId",
       label: "Role ID",
       type: "text",
       defaultValue: "",
-      validation: {}, // Champ optionnel, pas de règle "required"
+      validation: {},
+      showOn: "create",
     },
   ];
 
@@ -94,6 +104,11 @@ const Index = () => {
     const totalCount = Math.ceil(citizens.total / perPage);
     setCount(totalCount);
   }, [perPage, citizens]);
+
+  useEffect(() => {
+    const filtered = citizens.data.filter((c) => `${c.name} ${c.surname} ${c.email}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
+    setCitiensFiltered(filtered);
+  }, [debouncedSearch, citizens]);
 
   const handleRowDoubleClick = (rowData: any) => {
     setFormData(rowData);
@@ -107,6 +122,16 @@ const Index = () => {
     } else {
       createCitizen(data);
     }
+    handleCloseModal();
+  };
+
+  const handleDeleteClick = (id: number) => {
+    console.log("Delete citizen with ID:", id);
+    deleteCitizen(id);
+    handleCloseModal();
+  };
+
+  const handleCloseModal = () => {
     setOpen(false);
   };
 
@@ -115,9 +140,9 @@ const Index = () => {
       {error && <ErrorComponent errorMessage={error?.message} />}
       {!loading && !error && (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <HeaderGrid title="Liste des citoyens" onAddClick={() => setOpen(true)} />
+          <HeaderGrid title="Liste des citoyens" onAddClick={() => setOpen(true)} searchValue={search} onSearchChange={setSearch} />
           <GridComponent
-            rows={citizens.data}
+            rows={citizensFiltered}
             columns={columns}
             loading={loading}
             hideFooter={true}
@@ -127,15 +152,16 @@ const Index = () => {
           />
           <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginTop: "20px" }}>
             <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "flex", flexDirection: "row" }}>
-              <InputLabel>Ligne par page</InputLabel>
+              <InputLabel variant="outlined">Ligne par page</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={count}
+                value={perPage}
                 label="Ligne par page"
+                sx={{ width: "100%" }}
                 onChange={(data: any) => {
-                  setPerPage(parseInt(data.target.value, 10));
-                  setPage(0);
+                  setPerPage(parseInt(data.target.value));
+                  setPage(1);
                 }}
               >
                 <MenuItem value={10}>10</MenuItem>
@@ -149,6 +175,7 @@ const Index = () => {
                 onClick={() => {
                   setPage(page - 1);
                 }}
+                disabled={page === 1}
               >
                 -
               </Button>
@@ -159,7 +186,7 @@ const Index = () => {
                 onClick={() => {
                   setPage(page + 1);
                 }}
-                disabled={page === count - 1}
+                disabled={page === count}
               >
                 +
               </Button>
@@ -168,11 +195,15 @@ const Index = () => {
 
           <ModalEdition
             open={open}
-            onClose={() => setOpen(false)}
-            title="Ajouter un citoyen"
+            onClose={() => handleCloseModal()}
+            title={formData ? "Modifier un citoyen" : "Créer un citoyen"}
             fields={createCitizenFormConfig}
             onSubmit={(data) => handleSubmitClick(data)}
             initialData={formData}
+            TransitionProps={{ onExited: () => setFormData(null) }}
+            onDelete={(id) => {
+              handleDeleteClick(id);
+            }}
           />
         </Box>
       )}

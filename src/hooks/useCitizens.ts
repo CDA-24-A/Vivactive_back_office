@@ -9,7 +9,7 @@ interface UseCitizensReturn {
   fetchCitizens: ({page, perPage}: {page?: number, perPage?: number}) => Promise<void>;
   createCitizen: (newCitizen: Omit<Citizen, 'id'>) => Promise<void>;
   updateCitizen: (id: number, updatedFields: Partial<Citizen>) => Promise<void>;
-  // deleteCitizen: (id: number) => Promise<void>;
+  deleteCitizen: (id: number) => Promise<void>;
 }
 
 const useCitizens = (): UseCitizensReturn => {
@@ -72,18 +72,19 @@ const useCitizens = (): UseCitizensReturn => {
   };
 
   // Supprimer un citoyen
-  // const deleteCitizen = async (id: number) => {
-  //   setError(null);
-  //   try {
-  //     const res = await fetch(`${baseUrl}/citizen/${id}`, {
-  //       method: 'DELETE'
-  //     });
-  //     if (!res.ok) throw new Error(`Erreur lors de la suppression : ${res.status}`);
-  //     setCitizens((prev) => prev.filter((citizen) => citizen.id !== id));
-  //   } catch (err: any) {
-  //     setError(err);
-  //   }
-  // };
+  const deleteCitizen = async (id: number) => {
+    setError(null);
+    try {
+      const res = await fetch(`${baseUrl}/citizen/${id}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error(`Erreur lors de la suppression : ${res.status}`);
+      const messageDeletedCitizen : Omit<CitizenAdd, 'data'> = await res.json();
+      setCitizens((prev) => ({data: prev.data.filter((citizen) => citizen.id !== id), message: messageDeletedCitizen.message, total: prev.total - 1}));
+    } catch (err: any) {
+      setError(err);
+    }
+  };
 
   return {
     citizens,
@@ -92,7 +93,7 @@ const useCitizens = (): UseCitizensReturn => {
     fetchCitizens,
     createCitizen,
     updateCitizen,
-    // deleteCitizen
+    deleteCitizen
   };
 };
 
