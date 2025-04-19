@@ -7,6 +7,7 @@ import { Route, Routes } from "react-router-dom";
 import Test from "./pages/test";
 import Index from "./pages";
 import Erreur404 from "./pages/erreur404";
+import Resource from "./pages/resource";
 
 function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -20,7 +21,7 @@ function App() {
     <div className="app" style={{ height: `calc(100vh - ${headerHeight}px)` }}>
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/test" element={<Test />} />
+        <Route path="/resources" element={<Resource />} />
         <Route path="*" element={<Erreur404 />} />
       </Routes>
     </div>
