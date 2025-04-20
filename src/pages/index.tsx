@@ -5,7 +5,7 @@ import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import { useState } from "react";
-import { Citizen } from "../types/citizen";
+import { CitizenType } from "../types/citizen";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
@@ -43,7 +43,7 @@ const Index = () => {
   const [count, setCount] = useState<number>(1);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
   const [search, setSearch] = useState<string>("");
-  const [citizensFiltered, setCitiensFiltered] = useState<Citizen[]>([]);
+  const [citizensFiltered, setCitiensFiltered] = useState<CitizenType[]>([]);
 
   const debouncedSearch = useDebounce(search, 500);
 
@@ -115,7 +115,7 @@ const Index = () => {
     setOpen(true);
   };
 
-  const handleSubmitClick = (data: Citizen) => {
+  const handleSubmitClick = (data: CitizenType) => {
     console.log("Data submitted:", data);
     if (data.id) {
       updateCitizen(data.id, { ...data, roleId: "7d725762-d488-4238-9414-cc70ec24a6f5" });
@@ -125,7 +125,7 @@ const Index = () => {
     handleCloseModal();
   };
 
-  const handleDeleteClick = (id: number) => {
+  const handleDeleteClick = (id: string) => {
     console.log("Delete citizen with ID:", id);
     deleteCitizen(id);
     handleCloseModal();

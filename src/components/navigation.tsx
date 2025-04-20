@@ -12,6 +12,11 @@ const Navigation = () => {
           <GroupIcon />
         </IconButton>
       </NavLink>
+      <NavLink to="/roles" className={({ isActive }) => (isActive ? "selected" : "")}>
+        <IconButton size="large" aria-label="Voir les rôles">
+          <GroupIcon />
+        </IconButton>
+      </NavLink>
       <NavLink to="/ressources" className={({ isActive }) => (isActive ? "selected" : "")}>
         <IconButton size="large" aria-label="Voir les ressources">
           <ModeCommentIcon />

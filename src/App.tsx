@@ -7,6 +7,7 @@ import { Route, Routes } from "react-router-dom";
 import Test from "./pages/test";
 import Index from "./pages";
 import Erreur404 from "./pages/erreur404";
+import Role from "./pages/role";
 
 function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -21,6 +22,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/test" element={<Test />} />
+        <Route path="/roles" element={<Role />} />
         <Route path="*" element={<Erreur404 />} />
       </Routes>
     </div>

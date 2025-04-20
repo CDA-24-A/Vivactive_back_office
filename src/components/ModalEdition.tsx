@@ -1,4 +1,3 @@
-// GenericModal.tsx
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton, InputAdornment } from "@mui/material";
@@ -9,7 +8,6 @@ export interface FieldConfig {
   name: string;
   label: string;
   type: "text" | "number" | "email" | "password";
-  defaultValue?: string | number;
   validation?: Record<string, any>;
   showOn: "create" | "edit" | "always";
 }
@@ -20,11 +18,9 @@ interface GenericModalProps {
   title: string;
   fields: FieldConfig[];
   onSubmit: (data: any) => void;
-  onDelete?: (id: number) => void;
-  initialData?: any;
-  TransitionProps?: {
-    onExited: () => void;
-  };
+  onDelete?: (id: string) => void;
+  initialData?: Record<string, any>;
+  TransitionProps?: { onExited: () => void };
 }
 
 const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, onSubmit, fields, initialData, onDelete, TransitionProps }) => {
@@ -35,38 +31,39 @@ const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, onSub
     control,
     reset,
     formState: { dirtyFields },
-  } = useForm({
+  } = useForm<Record<string, any>>({
     defaultValues: initialData || {},
+    shouldUnregister: false,
   });
 
-  // État pour contrôler l'affichage du mot de passe pour chaque champ
+  // Show/hide password state
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    // Reset du formulaire avec initialData
-    reset(initialData || {});
-    // Initialisation de l'état showPassword à false pour tous les champs password
-    const initVisibility: Record<string, boolean> = {};
-    fields.forEach((f) => {
-      if (f.type === "password") initVisibility[f.name] = false;
-    });
-    setShowPassword(initVisibility);
-  }, [initialData, reset, fields]);
+    if (open) {
+      // Reset form when modal opens or initialData changes
+      reset(initialData || {});
+      // Initialize password visibility
+      const vis: Record<string, boolean> = {};
+      fields.forEach((f) => {
+        if (f.type === "password") vis[f.name] = false;
+      });
+      setShowPassword(vis);
+    }
+  }, [open, initialData, reset, fields]);
 
-  // Filtrage des champs selon le mode
-  const filteredFields = fields.filter((field) => field.showOn === "always" || (isEdit && field.showOn === "edit") || (!isEdit && field.showOn === "create"));
+  // Filter fields by mode
+  const filteredFields = fields.filter((f) => f.showOn === "always" || (isEdit && f.showOn === "edit") || (!isEdit && f.showOn === "create"));
 
-  // Handler pour toggle l'affichage
   const handleClickShowPassword = (name: string) => {
     setShowPassword((prev) => ({ ...prev, [name]: !prev[name] }));
   };
 
-  // Construction du payload de PATCH
   const handlePatch = (data: any) => {
     const payload = Object.keys(dirtyFields).reduce((acc, key) => {
-      (acc as any)[key] = (data as any)[key];
+      acc[key] = data[key];
       return acc;
-    }, {} as any);
+    }, {} as Record<string, any>);
     onSubmit(payload);
   };
 
@@ -76,19 +73,15 @@ const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, onSub
       <DialogContent>
         <form id="generic-form" onSubmit={handleSubmit(isEdit ? handlePatch : onSubmit)}>
           {filteredFields.map((field) => {
-            // Déterminer le type à afficher dynamiquement
             const isPwd = field.type === "password";
-            const type = isPwd ? (showPassword[field.name] ? "text" : "password") : field.type;
-
+            const type = isPwd && showPassword[field.name] ? "text" : field.type;
             return (
-              <Controller
-                key={field.name}
-                name={field.name}
-                control={control}
-                defaultValue={field.defaultValue || ""}
-                rules={field.validation}
-                render={({ field: ctrl, fieldState: { error } }) => (
-                  <Box sx={{ display: "flex", alignItems: "center", width: "25vw", mt: 2 }}>
+              <Box key={field.name} sx={{ display: "flex", alignItems: "center", mt: 2, width: "25vw" }}>
+                <Controller
+                  name={field.name}
+                  control={control}
+                  rules={field.validation}
+                  render={({ field: ctrl, fieldState: { error } }) => (
                     <TextField
                       {...ctrl}
                       label={field.label}
@@ -111,9 +104,9 @@ const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, onSub
                           : undefined
                       }
                     />
-                  </Box>
-                )}
-              />
+                  )}
+                />
+              </Box>
             );
           })}
         </form>
