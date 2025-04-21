@@ -8,6 +8,7 @@ import Test from "./pages/test";
 import Index from "./pages";
 import Erreur404 from "./pages/erreur404";
 import Resource from "./pages/resource";
+import EditResource from "./pages/editResource";
 
 function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -23,6 +24,7 @@ function App() {
         <Route path="/" element={<Index />} />
         <Route path="/resources" element={<Resource />} />
         <Route path="*" element={<Erreur404 />} />
+        <Route path="/edit-resource" element={<EditResource />} />
       </Routes>
     </div>
   );

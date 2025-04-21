@@ -9,7 +9,7 @@ interface FormData {
   email: string;
 }
 
-const MyForm: React.FC = () => {
+const EditResource: React.FC = () => {
   const {
     handleSubmit,
     control,
@@ -102,4 +102,4 @@ const MyForm: React.FC = () => {
   );
 };
 
-export default MyForm;
+export default EditResource;

@@ -10,6 +10,7 @@ import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
+import { useNavigate } from "react-router-dom";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -58,6 +59,8 @@ const Index = () => {
   const [count, setCount] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
   const [resourcesFiltered, setResourcesFiltered] = useState<Resource[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const debouncedSearch = useDebounce(search, 500);
 
@@ -82,7 +85,7 @@ const Index = () => {
       {error && <ErrorComponent errorMessage={error?.message} />}
       {!loading && !error && (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <HeaderGrid title="Liste des ressources" onAddClick={() => setOpen(true)} searchValue={search} onSearchChange={setSearch} />
+          <HeaderGrid title="Liste des ressources" onAddClick={() => navigate("/edit-resource")} searchValue={search} onSearchChange={setSearch} />
           <GridComponent
             rows={resourcesFiltered}
             columns={columns}
