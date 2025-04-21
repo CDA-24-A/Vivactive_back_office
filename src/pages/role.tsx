@@ -29,7 +29,6 @@ const Role = () => {
       name: "name",
       label: "Nom",
       type: "text",
-      defaultValue: "",
       validation: { required: "Le nom est requis" },
       showOn: "always",
     },
@@ -50,6 +49,7 @@ const Role = () => {
   };
 
   const handleSubmitClick = (data: RoleType) => {
+    console.log("data", data);
     if (data.id) {
       updateRole(data.id, data);
     } else {
@@ -64,6 +64,7 @@ const Role = () => {
   };
 
   const handleCloseModal = () => {
+    setFormData(null);
     setOpen(false);
   };
 
@@ -89,8 +90,13 @@ const Role = () => {
             title={formData ? "Modifier un rôle" : "Créer un rôle"}
             fields={createRoleFormConfig}
             onSubmit={(data) => handleSubmitClick(data)}
-            initialData={formData}
-            TransitionProps={{ onExited: () => setFormData(null) }}
+            initialData={formData ? formData : undefined}
+            // TransitionProps={{
+            //   onExited: () => {
+            //     console.log("onExited");
+            //     setFormData(null);
+            //   },
+            // }}
             onDelete={(id) => {
               handleDeleteClick(id);
             }}

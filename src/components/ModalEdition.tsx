@@ -32,7 +32,7 @@ const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, onSub
     reset,
     formState: { dirtyFields },
   } = useForm<Record<string, any>>({
-    defaultValues: initialData || {},
+    defaultValues: initialData?.row || {},
     shouldUnregister: false,
   });
 
@@ -40,10 +40,10 @@ const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, onSub
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
+    console.log("Initial data:", initialData);
+
     if (open) {
-      // Reset form when modal opens or initialData changes
-      reset(initialData || {});
-      // Initialize password visibility
+      reset(initialData?.row || {});
       const vis: Record<string, boolean> = {};
       fields.forEach((f) => {
         if (f.type === "password") vis[f.name] = false;
@@ -60,7 +60,7 @@ const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, onSub
   };
 
   const handlePatch = (data: any) => {
-    const payload = Object.keys(dirtyFields).reduce((acc, key) => {
+    const payload = Object.keys({ ...dirtyFields, id: initialData?.id }).reduce((acc, key) => {
       acc[key] = data[key];
       return acc;
     }, {} as Record<string, any>);
