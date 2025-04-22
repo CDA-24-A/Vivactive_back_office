@@ -60,8 +60,8 @@ const Index = () => {
   const [resourcesFiltered, setResourcesFiltered] = useState<ResourceType[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
-  const [file, setFile] = useState<Field | null>(null);
-  const [banner, setBanner] = useState<Field | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [banner, setBanner] = useState<File | null>(null);
 
   const ressourceFormConfig: FieldConfig[] = [
     { name: "title", label: "Titre", type: "text", validation: { required: "Le titre est requis" }, showOn: "always" },
