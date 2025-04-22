@@ -15,6 +15,7 @@ import {
   Select,
   MenuItem,
   InputLabel,
+  Typography,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -35,7 +36,7 @@ const VisuallyHiddenInput = styled("input")({
 export interface FieldConfig {
   name: string;
   label: string;
-  type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "date";
+  type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "date" | "checkbox";
   defaultValue?: string | number;
   validation?: Record<string, any>;
   showOn: "create" | "edit" | "always";
@@ -77,7 +78,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
     reset,
     formState: { dirtyFields },
   } = useForm({
-    defaultValues: initialData || {},
+    defaultValues: initialData?.row || {},
   });
 
   // État pour contrôler l'affichage du mot de passe pour chaque champ
@@ -85,7 +86,9 @@ const GenericModal: React.FC<GenericModalProps> = ({
 
   useEffect(() => {
     // Reset du formulaire avec initialData
-    reset(initialData || {});
+    reset(initialData?.row || {});
+    console.log("initialData", initialData?.row || {});
+
     // Initialisation de l'état showPassword à false pour tous les champs password
     const initVisibility: Record<string, boolean> = {};
     fields.forEach((f) => {
@@ -104,10 +107,10 @@ const GenericModal: React.FC<GenericModalProps> = ({
 
   // Construction du payload de PATCH
   const handlePatch = (data: any) => {
-    const payload = Object.keys(dirtyFields).reduce((acc, key) => {
-      (acc as any)[key] = (data as any)[key];
+    const payload = Object.keys({ ...dirtyFields, id: initialData?.id }).reduce((acc, key) => {
+      acc[key] = data[key];
       return acc;
-    }, {} as any);
+    }, {} as Record<string, any>);
     onSubmit(payload);
   };
 
@@ -130,7 +133,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
                 rules={field.validation}
                 render={({ field: ctrl, fieldState: { error } }) => (
                   <Box sx={{ display: "flex", alignItems: "center", width: "40vw", mt: 2 }}>
-                    {field.type !== "file" && field.type !== "banner" && (
+                    {field.type !== "file" && field.type !== "banner" && field.type !== "checkbox" && (
                       <TextField
                         {...ctrl}
                         label={field.label}
@@ -195,6 +198,12 @@ const GenericModal: React.FC<GenericModalProps> = ({
                           </Box>
                         )}
                       </>
+                    )}
+                    {field.type === "checkbox" && (
+                      <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
+                        <Typography>{field.label}</Typography>
+                        <input type="checkbox" {...ctrl} checked={ctrl.value} onChange={(e) => ctrl.onChange(e.target.checked)} style={{ marginLeft: "8px" }} />
+                      </Box>
                     )}
                   </Box>
                 )}

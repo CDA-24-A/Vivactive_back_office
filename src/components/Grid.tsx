@@ -11,7 +11,7 @@ interface propsGridCompornentType {
 
 export default function GridComponent({ rows, columns, loading, hideFooter, onRowDoubleClick }: propsGridCompornentType) {
   return (
-    <Paper sx={{ flex: 15, height: "70vh" }}>
+    <Paper sx={{ flex: 15, height: "50vh" }}>
       <DataGrid
         rows={rows}
         columns={columns}

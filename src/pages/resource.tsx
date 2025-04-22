@@ -10,6 +10,8 @@ import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
+import { RessourceStatus } from "../utils/enums";
+import { formatISOToDateInput } from "../utils/date";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -42,9 +44,10 @@ const columns: GridColDef[] = [
     field: "status",
     headerName: "Statut",
     width: 160,
+    valueGetter: (value) => `${RessourceStatus[value]}`,
   },
   {
-    field: "ressourceType",
+    field: "typeRessource",
     headerName: "Type de ressource",
     width: 160,
     valueGetter: (value: { name: string }) => `${value.name}`,
@@ -84,7 +87,7 @@ const Index = () => {
     },
     { name: "fileId", label: "Fichier", type: "file", validation: {}, showOn: "create" },
     { name: "bannerId", label: "Bannière", type: "banner", validation: {}, showOn: "create" },
-    { name: "isValidate", label: "Validé ?", type: "password", validation: {}, showOn: "edit" },
+    { name: "isValidate", label: "Validé ?", type: "checkbox", validation: {}, showOn: "edit" },
     {
       name: "status",
       label: "Statut",
@@ -92,14 +95,15 @@ const Index = () => {
       validation: { required: "Le statut est requis" },
       showOn: "always",
       options: [
-        { value: "test", label: "Nom de label" },
-        { value: "test", label: "Nom de label" },
-        { value: "test", label: "Nom de label" },
-        { value: "test", label: "Nom de label" },
+        { value: "EN_ATTENTE", label: "En attente" },
+        { value: "VALIDEE", label: "Validéee" },
+        { value: "CLOTUREE", label: "Cloturée" },
+        { value: "EN_COURS", label: "En cours" },
+        { value: "EXPIREE", label: "Expirée" },
       ],
     },
     {
-      name: "ressourceTypeId",
+      name: "typeRessourceId",
       label: "Type de ressource",
       type: "dropdown",
       validation: { required: "Le type est requis" },
@@ -131,25 +135,33 @@ const Index = () => {
     setResourcesFiltered(filtered);
   }, [debouncedSearch, resources]);
 
-  const handleRowDoubleClick = (rowData: any) => {};
+  const handleRowDoubleClick = (rowData: any) => {
+    console.log("Row double clicked:", rowData);
+    setFormData({ ...rowData, row: { ...rowData.row, deadLine: formatISOToDateInput(rowData.row.deadLine) } });
+    setOpen(true);
+  };
 
   const handleSubmitClick = (data: ResourceType) => {
-    console.log("Data submitted:", data);
-    console.log("File submitted:", file);
-    console.log("File submitted:", file?.get("fileBytes"));
+    console.log("Form submitted:", data);
 
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      console.log(key, value);
-      formData.append(key, value);
-    });
-    if (file) {
-      formData.append("fileBytes", file, file.name);
-    }
     if (data.id) {
-      // updateResource(data.id, FormData);
+      updateResource(data.id, {
+        ...data,
+        categoryId: "54c35596-8852-4bd2-be25-95e75f6ed7e2",
+        typeRessourceId: "813130a8-889b-48ca-bb0e-ff8b907e96c4",
+        nbParticipant: data.nbParticipant && Number(data.nbParticipant),
+        maxParticipant: data.maxParticipant && Number(data.maxParticipant),
+        deadLine: data.deadLine && new Date(data.deadLine),
+      });
     } else {
-      createResource(formData);
+      createResource({
+        ...data,
+        categoryId: "54c35596-8852-4bd2-be25-95e75f6ed7e2",
+        typeRessourceId: "813130a8-889b-48ca-bb0e-ff8b907e96c4",
+        nbParticipant: Number(data.nbParticipant),
+        maxParticipant: Number(data.maxParticipant),
+        deadLine: data.deadLine ? new Date(data.deadLine) : new Date(),
+      });
     }
     handleCloseModal();
   };
@@ -166,20 +178,12 @@ const Index = () => {
 
   const handleFileChange = (data: File) => {
     console.log("File submitted:", data);
-    setFile((prev) => {
-      const newFormData = prev || new FormData();
-      newFormData.append("fileBytes", data, data.name);
-      return newFormData;
-    });
+    setFile(data);
   };
 
   const handleBannerChange = (data: File) => {
     console.log("Banner submitted:", data);
-    setBanner((prev) => {
-      const newFormData = prev || new FormData();
-      newFormData.append("bannerBytes", data, data.name);
-      return newFormData;
-    });
+    setBanner(banner);
   };
 
   return (
