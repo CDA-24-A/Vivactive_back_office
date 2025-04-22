@@ -1,17 +1,45 @@
 // GenericModal.tsx
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton, InputAdornment } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  IconButton,
+  InputAdornment,
+  Select,
+  MenuItem,
+  InputLabel,
+} from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 export interface FieldConfig {
   name: string;
   label: string;
-  type: "text" | "number" | "email" | "password";
+  type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "date";
   defaultValue?: string | number;
   validation?: Record<string, any>;
   showOn: "create" | "edit" | "always";
+  options?: Array<{ value: string | number; label: string }> | null;
 }
 
 interface GenericModalProps {
@@ -25,9 +53,22 @@ interface GenericModalProps {
   TransitionProps?: {
     onExited: () => void;
   };
+  onSubmitFile?: (file: File) => void;
+  onSubmitBanner?: (file: File) => void;
 }
 
-const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, onSubmit, fields, initialData, onDelete, TransitionProps }) => {
+const GenericModal: React.FC<GenericModalProps> = ({
+  open,
+  onClose,
+  title,
+  onSubmit,
+  fields,
+  initialData,
+  onDelete,
+  TransitionProps,
+  onSubmitFile,
+  onSubmitBanner,
+}) => {
   const isEdit = Boolean(initialData);
 
   const {
@@ -88,29 +129,73 @@ const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, onSub
                 defaultValue={field.defaultValue || ""}
                 rules={field.validation}
                 render={({ field: ctrl, fieldState: { error } }) => (
-                  <Box sx={{ display: "flex", alignItems: "center", width: "25vw", mt: 2 }}>
-                    <TextField
-                      {...ctrl}
-                      label={field.label}
-                      type={type}
-                      fullWidth
-                      variant="outlined"
-                      error={!!error}
-                      helperText={error?.message}
-                      InputProps={
-                        isPwd
-                          ? {
-                              endAdornment: (
-                                <InputAdornment position="end">
-                                  <IconButton aria-label="toggle password visibility" onClick={() => handleClickShowPassword(field.name)} edge="end">
-                                    {showPassword[field.name] ? <VisibilityOff /> : <Visibility />}
-                                  </IconButton>
-                                </InputAdornment>
-                              ),
-                            }
-                          : undefined
-                      }
-                    />
+                  <Box sx={{ display: "flex", alignItems: "center", width: "40vw", mt: 2 }}>
+                    {field.type !== "file" && field.type !== "banner" && (
+                      <TextField
+                        {...ctrl}
+                        label={field.label}
+                        select={field.type === "dropdown"}
+                        type={type}
+                        fullWidth
+                        variant="outlined"
+                        placeholder=""
+                        error={!!error}
+                        helperText={error?.message}
+                        InputProps={
+                          isPwd
+                            ? {
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <IconButton aria-label="toggle password visibility" onClick={() => handleClickShowPassword(field.name)} edge="end">
+                                      {showPassword[field.name] ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                  </InputAdornment>
+                                ),
+                              }
+                            : undefined
+                        }
+                      >
+                        {field.options &&
+                          field.options.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.label}
+                            </MenuItem>
+                          ))}
+                      </TextField>
+                    )}
+                    {(field.type === "file" || field.type === "banner") && (
+                      <>
+                        <Button component="label" role={undefined} variant="contained" tabIndex={-1} startIcon={<CloudUploadIcon />}>
+                          {field.label}
+                          <VisuallyHiddenInput
+                            name={ctrl.name}
+                            ref={ctrl.ref}
+                            onBlur={ctrl.onBlur}
+                            type="file"
+                            onChange={(event) => {
+                              const file = event.target.files?.[0] ?? null;
+                              ctrl.onChange(file);
+                              if (onSubmitBanner && onSubmitFile && event.target.files && event.target.files.length > 0) {
+                                if (field.type === "banner") {
+                                  onSubmitBanner(event.target.files[0]);
+                                } else {
+                                  onSubmitFile(event.target.files[0]);
+                                }
+                              }
+                            }}
+                          />
+                        </Button>
+                        {ctrl.value && (
+                          <Box sx={{ ml: 2 }}>
+                            {field.type === "banner" ? (
+                              <img src={URL.createObjectURL(ctrl.value)} alt="Banner" style={{ width: "100px", height: "100px" }} />
+                            ) : (
+                              <span>{ctrl.value.name}</span>
+                            )}
+                          </Box>
+                        )}
+                      </>
+                    )}
                   </Box>
                 )}
               />

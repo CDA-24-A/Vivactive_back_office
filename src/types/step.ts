@@ -1,12 +1,12 @@
-import { Progression } from "./progression";
-import { Resource } from "./resource";
+import { ProgressionType } from "./progression";
+import { ResourceType } from "./resource";
 
-export interface Step {
+export interface StepType {
     id: string;
     title: string;
     description: string;
     order: number;
-    ressource: Resource;
+    ressource: ResourceType;
     ressourceId: string;
-    progression: Progression[]
+    progression: ProgressionType[]
 }

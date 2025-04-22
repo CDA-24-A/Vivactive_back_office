@@ -1,8 +1,8 @@
-import { Resource } from "./resource";
+import { ResourceType } from "./resource";
 
-export interface Category {
+export interface CategoryType {
     id:  string  
     name: string
     description: string 
-    ressources: Resource[]
+    ressources: ResourceType[]
 }

@@ -1,12 +1,12 @@
-import { Citizen } from "./citizen";
-import { Step } from "./step";
+import { CitizenType } from "./citizen";
+import { StepType } from "./step";
 
-export interface Progression {
+export interface ProgressionType {
     id: string;
     completed: boolean;
     dateCompleted: Date;
-    citizen: Citizen;
+    citizen: CitizenType;
     citizenId: string;
-    step: Step;
+    step: StepType;
     stepId: string;
 }

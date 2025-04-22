@@ -1,7 +1,7 @@
-import { Resource } from "./resource";
+import { ResourceType } from "./resource";
 
-export interface Image {
+export interface ImageType {
     id: string;
     url: Blob;
-    ressources: Resource[];
+    ressources: ResourceType[];
 }

@@ -1,10 +1,10 @@
-import { Citizen } from "./citizen";
-import { Resource } from "./resource";
+import { CitizenType } from "./citizen";
+import { ResourceType } from "./resource";
 
-export interface Favorite {
+export interface FavoriteType {
     id: string;
-    citizen: Citizen;
+    citizen: CitizenType;
     citizenId: string;
-    ressource: Resource;
+    ressource: ResourceType;
     ressourceId: string;
 }

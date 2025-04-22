@@ -1,7 +1,7 @@
-import { Resource } from "./resource";
+import { ResourceType } from "./resource";
 
-export interface File {
+export interface FileType {
     id : string;
     path : Blob;
-    ressources: Resource[]
+    ressources: ResourceType[]
 }

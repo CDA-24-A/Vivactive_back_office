@@ -1,12 +1,12 @@
-import { Citizen } from "./citizen";
-import { Resource } from "./resource";
+import { CitizenType } from "./citizen";
+import { ResourceType } from "./resource";
 
-export interface Comment {
+export interface CommentType {
     id: string;
     tile: string;
     description: string;
-    citizen: Citizen;
+    citizen: CitizenType;
     citizenId: string;
-    ressource: Resource;
+    ressource: ResourceType;
     ressourceId: string;
 }

@@ -1,37 +1,42 @@
-import { Category } from "./category";
-import { Comment } from "./comment";
-import { Favorite } from "./favorite";
-import { File } from "./file";
-import { Image } from "./image";
-import { Step } from "./step";
+import { CategoryType } from "./category";
+import { CommentType } from "./comment";
+import { FavoriteType } from "./favorite";
+import { FileType } from "./file";
+import { ImageType } from "./image";
+import { StepType } from "./step";
+import { ResourceTypeType } from "./resourceTypeType";
 
-export interface Resource {
+export interface ResourceType {
     id: number;
     title: string;
     description: string;
-    maxParticipant: string;
-    nbParticipant: string;
+    maxParticipant: number;
+    nbParticipant: number;
     deadline: Date;
-    category: Category;
+    category: CategoryType;
     categoryId: string
-    file: File;
+    ressourceTypeId: string
+    ressourceType: ResourceTypeType;
+    file: FileType;
     fileId: string
-    banner: Image;
+    banner: ImageType;
     bannerId: string;
-    step: Step[];
-    favorites: Favorite[];
-    comment: Comment[];
+    step: StepType[];
+    favorites: FavoriteType[];
+    comment: CommentType[];
     isValidate: boolean;
     status: string;
+    fileBytes?: File;
+    bannerBytes?: File;
   }
 
-export interface ResourceAdd
+export interface ResourceAddType
  {
-  data: Resource,
+  data: ResourceType,
   message: string
  }  
-export interface Resources {
-    data: Resource[];
+export interface ResourcesType {
+    data: ResourceType[];
     message: string
     total: number;
   }

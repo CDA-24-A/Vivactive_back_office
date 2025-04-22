@@ -1,22 +1,22 @@
-import { Role } from "./role";
+import { RoleType } from "./role";
 
-export interface Citizen {
+export interface CitizenType {
     id: number;
     name: string;
     email: string;
     surname: string;
     password: string;
-    role: Role
+    role: RoleType
     roleId: string
   }
 
-export interface CitizenAdd
+export interface CitizenAddType
  {
-  data: Citizen,
+  data: CitizenType,
   message: string
  }  
-export interface Citizens {
-    data: Citizen[];
+export interface CitizensType {
+    data: CitizenType[];
     message: string
     total: number;
   }
