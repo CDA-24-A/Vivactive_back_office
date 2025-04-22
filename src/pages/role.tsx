@@ -20,19 +20,19 @@ const Role = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
   const [search, setSearch] = useState<string>("");
-  const [rolesFiltered, setCitiensFiltered] = useState<RoleType[]>([]);
+  const [rolesFiltered, setRolesFiltered] = useState<RoleType[]>([]);
 
   const debouncedSearch = useDebounce(search, 500);
 
-  const createRoleFormConfig: FieldConfig[] = [
-    {
-      name: "name",
-      label: "Nom",
-      type: "text",
-      validation: { required: "Le nom est requis" },
-      showOn: "always",
-    },
-  ];
+  // const createRoleFormConfig: FieldConfig[] = [
+  //   {
+  //     name: "name",
+  //     label: "Nom",
+  //     type: "text",
+  //     validation: { required: "Le nom est requis" },
+  //     showOn: "always",
+  //   },
+  // ];
 
   useEffect(() => {
     fetchRoles();
@@ -40,28 +40,28 @@ const Role = () => {
 
   useEffect(() => {
     const filtered = roles.data.filter((c) => `${c.name}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
-    setCitiensFiltered(filtered);
+    setRolesFiltered(filtered);
   }, [debouncedSearch, roles]);
 
-  const handleRowDoubleClick = (rowData: any) => {
-    setFormData(rowData);
-    setOpen(true);
-  };
+  // const handleRowDoubleClick = (rowData: any) => {
+  //   setFormData(rowData);
+  //   setOpen(true);
+  // };
 
-  const handleSubmitClick = (data: RoleType) => {
-    console.log("data", data);
-    if (data.id) {
-      updateRole(data.id, data);
-    } else {
-      createRole(data);
-    }
-    handleCloseModal();
-  };
+  // const handleSubmitClick = (data: RoleType) => {
+  //   console.log("data", data);
+  //   if (data.id) {
+  //     updateRole(data.id, data);
+  //   } else {
+  //     createRole(data);
+  //   }
+  //   handleCloseModal();
+  // };
 
-  const handleDeleteClick = (id: string) => {
-    deleteRole(id);
-    handleCloseModal();
-  };
+  // const handleDeleteClick = (id: string) => {
+  //   deleteRole(id);
+  //   handleCloseModal();
+  // };
 
   const handleCloseModal = () => {
     setFormData(null);
@@ -73,18 +73,18 @@ const Role = () => {
       {error && <ErrorComponent errorMessage={error?.message} />}
       {!loading && !error && (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <HeaderGrid title="Liste des rôles" onAddClick={() => setOpen(true)} searchValue={search} onSearchChange={setSearch} />
+          <HeaderGrid title="Liste des rôles" onAddClick={() => {}} searchValue={search} onSearchChange={setSearch} />
           <GridComponent
             rows={rolesFiltered}
             columns={columns}
             loading={loading}
             hideFooter={true}
-            onRowDoubleClick={(params) => {
-              handleRowDoubleClick(params);
-            }}
+            // onRowDoubleClick={(params) => {
+            //   handleRowDoubleClick(params);
+            // }}
           />
 
-          <ModalEdition
+          {/* <ModalEdition
             open={open}
             onClose={() => handleCloseModal()}
             title={formData ? "Modifier un rôle" : "Créer un rôle"}
@@ -100,7 +100,7 @@ const Role = () => {
             onDelete={(id) => {
               handleDeleteClick(id);
             }}
-          />
+          /> */}
         </Box>
       )}
     </Box>
