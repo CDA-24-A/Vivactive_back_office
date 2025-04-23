@@ -1,20 +1,20 @@
-// src/hooks/useResource.ts
+// src/hooks/useResourceType.ts
 import { useState } from 'react';
 import { ResourceTypeType, ResourceAddType, ResourcesType } from '../types/resourceTypeType';
 
-interface UseResourcesReturn {
-  resources: ResourcesType;
+interface UseResourcesTypeReturn {
+  resourcesType: ResourcesType;
   loading: boolean;
   error: Error | null;
-  fetchResources: ({ page, perPage }: { page?: number; perPage?: number }) => Promise<void>;
-  createResource: (newResource: Omit<ResourceTypeType, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
-  updateResource: (id: number, updatedFields: Partial<ResourceTypeType>) => Promise<void>;
-  deleteResource: (id: number) => Promise<void>;
+  fetchResourcesType: ({ page, perPage }: { page?: number; perPage?: number }) => Promise<void>;
+  createResourceType: (newResourceType: Omit<ResourceTypeType, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
+  updateResourceType: (id: number, updatedFields: Partial<ResourceTypeType>) => Promise<void>;
+  deleteResourceType: (id: number) => Promise<void>;
 }
 
-const useResources = (): UseResourcesReturn => {
+const useResourcesType = (): UseResourcesTypeReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
-  const [resources, setResources] = useState<ResourcesType>({
+  const [resourcesType, setResourcesType] = useState<ResourcesType>({
     data: [],
     message: '',
     total: 0,
@@ -22,17 +22,15 @@ const useResources = (): UseResourcesReturn => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // Récupérer les ressources
-  const fetchResources = async ({ page, perPage }: { page?: number; perPage?: number }) => {
+  // Récupérer les resourcesType
+  const fetchResourcesType = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(
-        `${page && perPage ? `${baseUrl}/resource?page=${page}&perPage=${perPage}` : `${baseUrl}/resource`}`
-      );
+      const res = await fetch(`${baseUrl}/resource`);
       if (!res.ok) throw new Error(`Erreur lors du chargement : ${res.status}`);
       const data: ResourcesType = await res.json();
-      setResources(data);
+      setResourcesType(data);
     } catch (err: any) {
       setError(err);
     } finally {
@@ -40,20 +38,20 @@ const useResources = (): UseResourcesReturn => {
     }
   };
 
-  // Créer une ressource
-  const createResource = async (newResource: Omit<ResourceTypeType, 'id' | 'createdAt' | 'updatedAt'>) => {
+  // Créer une resourceType
+  const createResourceType = async (newResourceType: Omit<ResourceTypeType, 'id' | 'createdAt' | 'updatedAt'>) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/resource`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newResource),
+        body: JSON.stringify(newResourceType),
       });
       if (!res.ok) throw new Error(`Erreur lors de la création : ${res.status}`);
-      const createdResource: ResourceAddType = await res.json();
-      setResources((prev) => ({
-        data: [...prev.data, createdResource.data],
-        message: createdResource.message,
+      const createdResourceType: ResourceAddType = await res.json();
+      setResourcesType((prev) => ({
+        data: [...prev.data, createdResourceType.data],
+        message: createdResourceType.message,
         total: prev.total + 1,
       }));
     } catch (err: any) {
@@ -61,8 +59,8 @@ const useResources = (): UseResourcesReturn => {
     }
   };
 
-  // Mettre à jour une ressource
-  const updateResource = async (id: number, updatedFields: Partial<ResourceTypeType>) => {
+  // Mettre à jour une resourceType
+  const updateResourceType = async (id: number, updatedFields: Partial<ResourceTypeType>) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/resource/${id}`, {
@@ -71,10 +69,10 @@ const useResources = (): UseResourcesReturn => {
         body: JSON.stringify(updatedFields),
       });
       if (!res.ok) throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
-      const updatedResource: ResourceAddType = await res.json();
-      setResources((prev) => ({
-        data: prev.data.map((r) => (r.id === id ? updatedResource.data : r)),
-        message: updatedResource.message,
+      const updatedResourceType: ResourceAddType = await res.json();
+      setResourcesType((prev) => ({
+        data: prev.data.map((r) => (r.id === id ? updatedResourceType.data : r)),
+        message: updatedResourceType.message,
         total: prev.total,
       }));
     } catch (err: any) {
@@ -82,18 +80,18 @@ const useResources = (): UseResourcesReturn => {
     }
   };
 
-  // Supprimer une ressource
-  const deleteResource = async (id: number) => {
+  // Supprimer une resourceType
+  const deleteResourceType = async (id: number) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/resource/${id}`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error(`Erreur lors de la suppression : ${res.status}`);
-      const messageDeletedResource: Omit<ResourceAddType, 'data'> = await res.json();
-      setResources((prev) => ({
+      const messageDeletedResourceType: Omit<ResourceAddType, 'data'> = await res.json();
+      setResourcesType((prev) => ({
         data: prev.data.filter((r) => r.id !== id),
-        message: messageDeletedResource.message,
+        message: messageDeletedResourceType.message,
         total: prev.total - 1,
       }));
     } catch (err: any) {
@@ -102,14 +100,14 @@ const useResources = (): UseResourcesReturn => {
   };
 
   return {
-    resources,
+    resourcesType,
     loading,
     error,
-    fetchResources,
-    createResource,
-    updateResource,
-    deleteResource,
+    fetchResourcesType,
+    createResourceType,
+    updateResourceType,
+    deleteResourceType,
   };
 };
 
-export default useResources;
+export default useResourcesType;

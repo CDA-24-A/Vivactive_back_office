@@ -10,6 +10,8 @@ import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
+import  useCategory  from "../hooks/useCategory";
+import  useResourcesType  from "../hooks/useResourceType";
 import { RessourceStatus } from "../utils/enums";
 import { formatISOToDateInput } from "../utils/date";
 
@@ -56,6 +58,8 @@ const columns: GridColDef[] = [
 
 const Index = () => {
   const { fetchResources, resources, loading, error, createResource, updateResource, deleteResource } = useResources();
+  const { fetchCategories, categories} = useCategory();
+  const { fetchResourcesType, resourcesType} = useResourcesType();
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [count, setCount] = useState<number>(1);
@@ -78,12 +82,10 @@ const Index = () => {
       type: "dropdown",
       validation: { required: "La catégorie est requise" },
       showOn: "always",
-      options: [
-        { value: "test", label: "Nom de label" },
-        { value: "test", label: "Nom de label" },
-        { value: "test", label: "Nom de label" },
-        { value: "test", label: "Nom de label" },
-      ],
+      options: categories.data.map((cat) => ({
+        value: cat.id,
+        label: cat.name,
+      })),
     },
     { name: "fileId", label: "Fichier", type: "file", validation: {}, showOn: "create" },
     { name: "bannerId", label: "Bannière", type: "banner", validation: {}, showOn: "create" },
@@ -118,6 +120,14 @@ const Index = () => {
   ];
 
   const debouncedSearch = useDebounce(search, 500);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    fetchResourcesType({ page: page, perPage: perPage });
+  }, [perPage, page]);
 
   useEffect(() => {
     fetchResources({ page: page, perPage: perPage });
