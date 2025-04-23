@@ -8,6 +8,7 @@ import Test from "./pages/test";
 import Index from "./pages";
 import Erreur404 from "./pages/erreur404";
 import Role from "./pages/role";
+import Comment from "./pages/comment";
 
 function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -24,6 +25,7 @@ function App() {
         <Route path="/test" element={<Test />} />
         <Route path="/roles" element={<Role />} />
         <Route path="*" element={<Erreur404 />} />
+        <Route path="/comments" element={<Comment />} />
       </Routes>
     </div>
   );

@@ -26,7 +26,7 @@ const columns: GridColDef[] = [
     headerName: "Nom complet",
     sortable: false,
     width: 160,
-    valueGetter: (value, row) => `${row.firstName || ""} ${row.name || ""}`,
+    valueGetter: (value, row) => `${row.surname || ""} ${row.name || ""}`,
   },
   {
     field: "role",
@@ -204,7 +204,7 @@ const Index = () => {
             title={formData ? "Modifier un citoyen" : "Créer un citoyen"}
             fields={createCitizenFormConfig}
             onSubmit={(data) => handleSubmitClick(data)}
-            initialData={formData}
+            initialData={formData || undefined}
             TransitionProps={{ onExited: () => setFormData(null) }}
             onDelete={(id) => {
               handleDeleteClick(id);
