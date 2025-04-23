@@ -3,7 +3,7 @@ import React from "react";
 
 interface HeaderGridProps {
   title: string;
-  onAddClick: () => void;
+  onAddClick?: () => void;
   searchValue: string;
   onSearchChange: (value: string) => void;
 }
@@ -22,9 +22,11 @@ function HeaderGrid({ title, onAddClick, searchValue, onSearchChange }: HeaderGr
         onChange={(e) => onSearchChange(e.target.value)}
         sx={{ minWidth: 240, flex: 1 }}
       />
-      <Button variant="contained" onClick={onAddClick}>
-        Ajouter
-      </Button>
+      {onAddClick && (
+        <Button variant="contained" onClick={onAddClick}>
+          Ajouter
+        </Button>
+      )}
     </Box>
   );
 }
