@@ -3,10 +3,12 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom"; 
 import Index from "./pages";
 import Erreur404 from "./pages/erreur404";
 import Resource from "./pages/resource";
+import Login from "./pages/login";
+
 
 function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -22,6 +24,7 @@ function App() {
         <Route path="/" element={<Index />} />
         <Route path="/resources" element={<Resource />} />
         <Route path="*" element={<Erreur404 />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </div>
   );
