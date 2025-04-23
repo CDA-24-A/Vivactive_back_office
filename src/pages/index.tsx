@@ -10,6 +10,7 @@ import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
+import useRoles from "../hooks/useRoles";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -37,6 +38,7 @@ const columns: GridColDef[] = [
 
 const Index = () => {
   const { fetchCitizens, citizens, loading, error, createCitizen, updateCitizen, deleteCitizen } = useCitizens();
+  const { fetchRoles, roles } = useRoles();
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
@@ -52,7 +54,6 @@ const Index = () => {
       name: "name",
       label: "Nom",
       type: "text",
-      defaultValue: "",
       validation: { required: "Le nom est requis" },
       showOn: "always",
     },
@@ -60,7 +61,6 @@ const Index = () => {
       name: "surname",
       label: "Prénom",
       type: "text",
-      defaultValue: "",
       validation: { required: "Le prénom est requis" },
       showOn: "always",
     },
@@ -68,7 +68,6 @@ const Index = () => {
       name: "email",
       label: "Email",
       type: "email",
-      defaultValue: "",
       validation: {
         required: "L'email est requis",
         pattern: {
@@ -82,23 +81,29 @@ const Index = () => {
       name: "password",
       label: "Mot de passe",
       type: "password",
-      defaultValue: "",
       validation: { required: "Le mot de passe est requis" },
       showOn: "create",
     },
     {
       name: "roleId",
-      label: "Role ID",
-      type: "text",
-      defaultValue: "",
+      label: "Role",
+      type: "dropdown",
       validation: {},
       showOn: "create",
+      options: roles.data.map((role) => ({
+        label: role.name,
+        value: role.id,
+      })),
     },
   ];
 
   useEffect(() => {
     fetchCitizens({ page: page, perPage: perPage });
   }, [perPage, page]);
+
+  useEffect(() => {
+    fetchRoles();
+  }, []);
 
   useEffect(() => {
     const totalCount = Math.ceil(citizens.total / perPage);
@@ -118,7 +123,7 @@ const Index = () => {
   const handleSubmitClick = (data: CitizenType) => {
     console.log("Data submitted:", data);
     if (data.id) {
-      updateCitizen(data.id, { ...data, roleId: "7d725762-d488-4238-9414-cc70ec24a6f5" });
+      updateCitizen(data.id, data);
     } else {
       createCitizen(data);
     }

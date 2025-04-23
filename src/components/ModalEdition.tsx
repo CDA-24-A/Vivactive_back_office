@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton, InputAdornment } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton, InputAdornment, MenuItem } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 export interface FieldConfig {
   name: string;
   label: string;
-  type: "text" | "number" | "email" | "password";
+  type: "text" | "number" | "email" | "password" | "dropdown";
   validation?: Record<string, any>;
   showOn: "create" | "edit" | "always";
+  options?: Array<{ value: string | number; label: string }> | null;
 }
 
 interface GenericModalProps {
@@ -85,6 +86,7 @@ const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, onSub
                     <TextField
                       {...ctrl}
                       label={field.label}
+                      select={field.type === "dropdown"}
                       type={type}
                       fullWidth
                       variant="outlined"
@@ -103,7 +105,14 @@ const GenericModal: React.FC<GenericModalProps> = ({ open, onClose, title, onSub
                             }
                           : undefined
                       }
-                    />
+                    >
+                      {field.options &&
+                        field.options.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                    </TextField>
                   )}
                 />
               </Box>
