@@ -1,20 +1,20 @@
 // src/hooks/useCitizens.ts
 import { useState } from 'react';
-import { Citizen, CitizenAdd, Citizens } from '../types/citizen';
+import { CitizenType, CitizenAddType, CitizensType } from '../types/citizen';
 
 interface UseCitizensReturn {
-  citizens: Citizens;
+  citizens: CitizensType;
   loading: boolean;
   error: Error | null;
   fetchCitizens: ({page, perPage}: {page?: number, perPage?: number}) => Promise<void>;
-  createCitizen: (newCitizen: Omit<Citizen, 'id'>) => Promise<void>;
-  updateCitizen: (id: number, updatedFields: Partial<Citizen>) => Promise<void>;
+  createCitizen: (newCitizen: Omit<CitizenType, 'id'>) => Promise<void>;
+  updateCitizen: (id: number, updatedFields: Partial<CitizenType>) => Promise<void>;
   deleteCitizen: (id: number) => Promise<void>;
 }
 
 const useCitizens = (): UseCitizensReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
-  const [citizens, setCitizens] = useState<Citizens>({
+  const [citizens, setCitizens] = useState<CitizensType>({
     data: [],
   message: '',
     total: 0});
@@ -28,7 +28,7 @@ const useCitizens = (): UseCitizensReturn => {
     try {
       const res = await fetch(`${page && perPage ? baseUrl + "/citizen" + `?page=${page}&perPage=${perPage}` : baseUrl + "/citizen"}`);      
       if (!res.ok) throw new Error(`Erreur lors du chargement : ${res.status}`);
-      const data: Citizens = await res.json();
+      const data: CitizensType = await res.json();
       setCitizens(data);
     } catch (err: any) {      
       setError(err);
@@ -38,7 +38,7 @@ const useCitizens = (): UseCitizensReturn => {
   };
 
   // Créer un nouveau citoyen
-  const createCitizen = async (newCitizen: Omit<Citizen, 'id'>) => {
+  const createCitizen = async (newCitizen: Omit<CitizenType, 'id'>) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/citizen`, {
@@ -47,7 +47,7 @@ const useCitizens = (): UseCitizensReturn => {
         body: JSON.stringify(newCitizen)
       });
       if (!res.ok) throw new Error(`Erreur lors de la création : ${res.status}`);
-      const createdCitizen: CitizenAdd = await res.json();
+      const createdCitizen: CitizenAddType = await res.json();
       setCitizens((prev) => ({data: [...prev.data, createdCitizen.data], message: createdCitizen.message, total: prev.total + 1}));
     } catch (err: any) {
       setError(err);
@@ -55,7 +55,7 @@ const useCitizens = (): UseCitizensReturn => {
   };
 
   // Mettre à jour un citoyen
-  const updateCitizen = async (id: number, updatedFields: Partial<Citizen>) => {
+  const updateCitizen = async (id: number, updatedFields: Partial<CitizenType>) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/citizen/${id}`, {
@@ -64,7 +64,7 @@ const useCitizens = (): UseCitizensReturn => {
         body: JSON.stringify(updatedFields)
       });
       if (!res.ok) throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
-      const updatedCitizen: CitizenAdd = await res.json();
+      const updatedCitizen: CitizenAddType = await res.json();
       setCitizens((prev) => ({data: prev.data.map((citizen) => (citizen.id === id ? updatedCitizen.data : citizen)), message: updatedCitizen.message, total: prev.total}));
     } catch (err: any) {
       setError(err);
@@ -79,7 +79,7 @@ const useCitizens = (): UseCitizensReturn => {
         method: 'DELETE'
       });
       if (!res.ok) throw new Error(`Erreur lors de la suppression : ${res.status}`);
-      const messageDeletedCitizen : Omit<CitizenAdd, 'data'> = await res.json();
+      const messageDeletedCitizen : Omit<CitizenAddType, 'data'> = await res.json();
       setCitizens((prev) => ({data: prev.data.filter((citizen) => citizen.id !== id), message: messageDeletedCitizen.message, total: prev.total - 1}));
     } catch (err: any) {
       setError(err);
