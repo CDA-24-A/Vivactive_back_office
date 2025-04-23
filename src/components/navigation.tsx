@@ -17,7 +17,7 @@ const Navigation = () => {
           <ModeCommentIcon />
         </IconButton>
       </NavLink>
-      <NavLink to="/resource-type" className={({ isActive }) => (isActive ? "selected" : "")}>
+      <NavLink to="/resource-types" className={({ isActive }) => (isActive ? "selected" : "")}>
         <IconButton size="large" aria-label="Voir les types de ressources">
           <ModeCommentIcon />
         </IconButton>

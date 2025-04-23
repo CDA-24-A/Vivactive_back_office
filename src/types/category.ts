@@ -13,7 +13,7 @@ export interface CategoryAddType
   message: string
  }  
 
-export interface CategorysType {
+export interface CategoriesType {
     data: CategoryType[];
     message: string
     total: number;

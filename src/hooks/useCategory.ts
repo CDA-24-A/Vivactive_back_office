@@ -1,9 +1,9 @@
 // src/hooks/useCategory.ts
 import { useState } from 'react';
-import { CategorysType, CategoryAddType, CategoryType } from '../types/category';
+import { CategoriesType, CategoryAddType, CategoryType } from '../types/category';
 
 interface UseCategoriesReturn {
-  categories: CategorysType;
+  categories: CategoriesType;
   loading: boolean;
   error: Error | null;
   fetchCategories: () => Promise<void>;
@@ -14,7 +14,7 @@ interface UseCategoriesReturn {
 
 const useCategory = (): UseCategoriesReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
-  const [categories, setCategories] = useState<CategorysType>({
+  const [categories, setCategories] = useState<CategoriesType>({
     data: [],
     message: '',
     total: 0,
@@ -31,7 +31,7 @@ const useCategory = (): UseCategoriesReturn => {
         `${baseUrl}/category`
       );
       if (!res.ok) throw new Error(`Erreur lors du chargement : ${res.status}`);
-      const data: CategorysType = await res.json();
+      const data: CategoriesType = await res.json();
       setCategories(data);
     } catch (err: any) {
       setError(err);

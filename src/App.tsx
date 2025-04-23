@@ -9,6 +9,7 @@ import Erreur404 from "./pages/erreur404";
 import Resource from "./pages/resource";
 import Login from "./pages/login";
 import ResourceType from "./pages/resourceType";
+import Category from "./pages/category";
 
 function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -25,7 +26,8 @@ function App() {
         <Route path="/resources" element={<Resource />} />
         <Route path="*" element={<Erreur404 />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/resource-type" element={<ResourceType />} />
+        <Route path="/resource-types" element={<ResourceType />} />
+        <Route path="/categories" element={<Category />} />
       </Routes>
     </div>
   );
