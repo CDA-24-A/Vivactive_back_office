@@ -39,6 +39,7 @@ const Index = () => {
   useAuthRedirect();
 
   const { fetchCitizens, citizens, loading, error, createCitizen, updateCitizen, deleteCitizen } = useCitizens();
+  console.log("la", error);
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
