@@ -10,9 +10,8 @@ import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
-import  useCategory  from "../hooks/useCategory";
-import  useResourcesType  from "../hooks/useResourceType";
-import { RessourceStatus } from "../utils/enums";
+import useCategory from "../hooks/useCategory";
+import useResourcesType from "../hooks/useResourceType";
 import { formatISOToDateInput } from "../utils/date";
 
 const columns: GridColDef[] = [
@@ -46,7 +45,6 @@ const columns: GridColDef[] = [
     field: "status",
     headerName: "Statut",
     width: 160,
-    valueGetter: (value) => `${RessourceStatus[value]}`,
   },
   {
     field: "typeRessource",
@@ -57,9 +55,9 @@ const columns: GridColDef[] = [
 ];
 
 const Index = () => {
-  const { fetchResources, resources, loading, error, createResource, updateResource, deleteResource } = useResources();
-  const { fetchCategories, categories} = useCategory();
-  const { fetchResourcesType, resourcesType} = useResourcesType();
+  const { fetchResources, resources, loading, error, createResource, updateResource, deleteResource, fetchResource } = useResources();
+  const { fetchCategories, categories } = useCategory();
+  const { fetchResourcesType, resourcesType } = useResourcesType();
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [count, setCount] = useState<number>(1);
@@ -72,7 +70,7 @@ const Index = () => {
 
   const ressourceFormConfig: FieldConfig[] = [
     { name: "title", label: "Titre", type: "text", validation: { required: "Le titre est requis" }, showOn: "always" },
-    { name: "description", label: "Description", type: "text", validation: { required: "La description est requise" }, showOn: "always" },
+    { name: "description", label: "Description", type: "textArea", validation: { required: "La description est requise" }, showOn: "always" },
     { name: "maxParticipant", label: "Max participants", type: "number", validation: { min: { value: 1, message: ">=1" } }, showOn: "always" },
     { name: "nbParticipant", label: "Participants actuels", type: "number", validation: { min: { value: 0, message: ">=0" } }, showOn: "always" },
     { name: "deadLine", label: "Date limite", type: "date", validation: {}, showOn: "always" },
@@ -91,31 +89,15 @@ const Index = () => {
     { name: "bannerId", label: "Bannière", type: "banner", validation: {}, showOn: "create" },
     { name: "isValidate", label: "Validé ?", type: "checkbox", validation: {}, showOn: "edit" },
     {
-      name: "status",
-      label: "Statut",
-      type: "dropdown",
-      validation: { required: "Le statut est requis" },
-      showOn: "always",
-      options: [
-        { value: "EN_ATTENTE", label: "En attente" },
-        { value: "VALIDEE", label: "Validéee" },
-        { value: "CLOTUREE", label: "Cloturée" },
-        { value: "EN_COURS", label: "En cours" },
-        { value: "EXPIREE", label: "Expirée" },
-      ],
-    },
-    {
       name: "typeRessourceId",
       label: "Type de ressource",
       type: "dropdown",
       validation: { required: "Le type est requis" },
       showOn: "always",
-      options: [
-        { value: "test", label: "Nom de label" },
-        { value: "test", label: "Nom de label" },
-        { value: "test", label: "Nom de label" },
-        { value: "test", label: "Nom de label" },
-      ],
+      options: resourcesType.data.map((type) => ({
+        value: type.id,
+        label: type.name,
+      })),
     },
   ];
 
@@ -145,9 +127,11 @@ const Index = () => {
     setResourcesFiltered(filtered);
   }, [debouncedSearch, resources]);
 
-  const handleRowDoubleClick = (rowData: any) => {
-    console.log("Row double clicked:", rowData);
-    setFormData({ ...rowData, row: { ...rowData.row, deadLine: formatISOToDateInput(rowData.row.deadLine) } });
+  const handleRowDoubleClick = async (rowData: any) => {
+    await fetchResource(rowData.id).then((resource) => {
+      console.log("Resource fetched:", resource);
+      setFormData({ ...rowData, row: { ...resource, deadLine: resource?.deadLine && formatISOToDateInput(resource.deadLine) } });
+    });
     setOpen(true);
   };
 
@@ -157,20 +141,18 @@ const Index = () => {
     if (data.id) {
       updateResource(data.id, {
         ...data,
-        categoryId: "54c35596-8852-4bd2-be25-95e75f6ed7e2",
-        typeRessourceId: "813130a8-889b-48ca-bb0e-ff8b907e96c4",
         nbParticipant: data.nbParticipant && Number(data.nbParticipant),
         maxParticipant: data.maxParticipant && Number(data.maxParticipant),
-        deadLine: data.deadLine && new Date(data.deadLine),
+        deadLine: data.deadLine && new Date(data.deadLine).toISOString(),
       });
     } else {
       createResource({
         ...data,
-        categoryId: "54c35596-8852-4bd2-be25-95e75f6ed7e2",
-        typeRessourceId: "813130a8-889b-48ca-bb0e-ff8b907e96c4",
         nbParticipant: Number(data.nbParticipant),
         maxParticipant: Number(data.maxParticipant),
-        deadLine: data.deadLine ? new Date(data.deadLine) : new Date(),
+        deadLine: data.deadLine ? new Date(data.deadLine).toISOString() : new Date().toISOString(),
+      }).then((res) => {
+        console.log("Resource created:", res);
       });
     }
     handleCloseModal();
@@ -208,6 +190,8 @@ const Index = () => {
             loading={loading}
             hideFooter={true}
             onRowDoubleClick={(params) => {
+              console.log("Row double clicked:", params);
+
               handleRowDoubleClick(params);
             }}
           />

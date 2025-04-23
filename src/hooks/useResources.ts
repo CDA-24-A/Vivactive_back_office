@@ -4,11 +4,13 @@ import { ResourceAddType, ResourcesType, ResourceType } from '../types/resource'
 
 interface UseResourcesReturn {
   resources: ResourcesType;
+  resource: ResourceType | null;
   loading: boolean;
   error: Error | null;
   fetchResources: ({page, perPage}: {page?: number, perPage?: number}) => Promise<void>;
-  createResource: (newResource: Omit<ResourceType, 'id'>) => Promise<void>;
-  updateResource: (id: number, updatedFields: Partial<ResourceType>) => Promise<void>;
+  fetchResource: (id: number) => Promise<ResourceType>;
+  createResource: (newResource: Omit<ResourceType, 'id'>) => Promise<ResourceType>;
+  updateResource: (id: number, updatedFields: Partial<ResourceType>) => Promise<ResourceType>;
   deleteResource: (id: number) => Promise<void>;
 }
 
@@ -18,6 +20,7 @@ const useResources = (): UseResourcesReturn => {
     data: [],
   message: '',
     total: 0});
+    const [resource, setResource] = useState<ResourceType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -37,8 +40,25 @@ const useResources = (): UseResourcesReturn => {
     }
   };
 
+  const fetchResource = async (id: number): Promise<ResourceType> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${baseUrl}/Ressource/${id}`);
+      if (!res.ok) throw new Error(`Erreur lors du chargement : ${res.status}`);
+      const data: ResourceAddType = await res.json();
+      setResource(data.data);
+      return data.data;
+    } catch (err: any) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Créer un nouveau citoyen
-  const createResource = async (newResource: Omit<ResourceType, 'id'>) => {
+  const createResource = async (newResource: Omit<ResourceType, 'id'>): Promise<ResourceType> => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/Ressource`, {
@@ -49,13 +69,15 @@ const useResources = (): UseResourcesReturn => {
       if (!res.ok) throw new Error(`Erreur lors de la création : ${res.status}`);
       const createdResource: ResourceAddType = await res.json();
       setResources((prev) => ({data: [...prev.data, createdResource.data], message: createdResource.message, total: prev.total + 1}));
+      return createdResource.data;
     } catch (err: any) {
       setError(err);
+      throw err;
     }
   };
 
   // Mettre à jour un citoyen
-  const updateResource = async (id: number, updatedFields: Partial<ResourceType>) => {
+  const updateResource = async (id: number, updatedFields: Partial<ResourceType>): Promise<ResourceType> => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/Ressource/${id}`, {
@@ -66,8 +88,10 @@ const useResources = (): UseResourcesReturn => {
       if (!res.ok) throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
       const updatedResource: ResourceAddType = await res.json();
       setResources((prev) => ({data: prev.data.map((resource) => (resource.id === id ? updatedResource.data : resource)), message: updatedResource.message, total: prev.total}));
+      return updatedResource.data;
     } catch (err: any) {
       setError(err);
+      throw err;
     }
   };
 
@@ -88,9 +112,11 @@ const useResources = (): UseResourcesReturn => {
 
   return {
     resources,
+    resource,
     loading,
     error,
     fetchResources,
+    fetchResource,
     createResource,
     updateResource,
     deleteResource

@@ -1,6 +1,6 @@
 // GenericModal.tsx
 import React, { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { styled } from "@mui/material/styles";
 import {
   Box,
@@ -16,10 +16,13 @@ import {
   MenuItem,
   InputLabel,
   Typography,
+  Divider,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { StepType } from "../types/step";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -36,7 +39,7 @@ const VisuallyHiddenInput = styled("input")({
 export interface FieldConfig {
   name: string;
   label: string;
-  type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "date" | "checkbox";
+  type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "date" | "checkbox" | "textArea";
   defaultValue?: string | number;
   validation?: Record<string, any>;
   showOn: "create" | "edit" | "always";
@@ -83,11 +86,17 @@ const GenericModal: React.FC<GenericModalProps> = ({
 
   // État pour contrôler l'affichage du mot de passe pour chaque champ
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
+  const [steps, setSteps] = useState<Pick<StepType, "id" | "title" | "description" | "order">[]>([]);
 
   useEffect(() => {
     // Reset du formulaire avec initialData
     reset(initialData?.row || {});
     console.log("initialData", initialData?.row || {});
+
+    // S'il y a des étapes, on les ajoute au state
+    if (initialData?.row?.step) {
+      setSteps(initialData.row.step);
+    }
 
     // Initialisation de l'état showPassword à false pour tous les champs password
     const initVisibility: Record<string, boolean> = {};
@@ -111,14 +120,30 @@ const GenericModal: React.FC<GenericModalProps> = ({
       acc[key] = data[key];
       return acc;
     }, {} as Record<string, any>);
-    onSubmit(payload);
+    onSubmit(steps.length > 0 ? { ...payload, step: steps } : payload);
+  };
+
+  const handleAddStep = () => {
+    console.log("handleAddStep", steps);
+
+    const newStep: Pick<StepType, "id" | "title" | "description" | "order"> = {
+      id: "",
+      title: "",
+      description: "",
+      order: steps.length + 1,
+    };
+    setSteps((prev) => [...prev, newStep]);
+  };
+
+  const handleCreate = (payload: any) => {
+    onSubmit(steps.length > 0 ? { ...payload, step: steps } : payload);
   };
 
   return (
-    <Dialog open={open} onClose={onClose} TransitionProps={TransitionProps}>
+    <Dialog open={open} onClose={onClose} TransitionProps={TransitionProps} sx={{ "& .MuiDialog-paper": { width: "90%", maxHeight: "90vh" } }}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <form id="generic-form" onSubmit={handleSubmit(isEdit ? handlePatch : onSubmit)}>
+        <form id="generic-form" onSubmit={handleSubmit(isEdit ? handlePatch : handleCreate)}>
           {filteredFields.map((field) => {
             // Déterminer le type à afficher dynamiquement
             const isPwd = field.type === "password";
@@ -132,16 +157,16 @@ const GenericModal: React.FC<GenericModalProps> = ({
                 defaultValue={field.defaultValue || ""}
                 rules={field.validation}
                 render={({ field: ctrl, fieldState: { error } }) => (
-                  <Box sx={{ display: "flex", alignItems: "center", width: "40vw", mt: 2 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", width: "100%", mt: 2 }}>
                     {field.type !== "file" && field.type !== "banner" && field.type !== "checkbox" && (
                       <TextField
                         {...ctrl}
                         label={field.label}
                         select={field.type === "dropdown"}
                         type={type}
+                        multiline={field.type === "textArea"}
                         fullWidth
                         variant="outlined"
-                        placeholder=""
                         error={!!error}
                         helperText={error?.message}
                         InputProps={
@@ -210,6 +235,80 @@ const GenericModal: React.FC<GenericModalProps> = ({
               />
             );
           })}
+          <>
+            <Divider sx={{ margin: "1rem 0" }} />
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <Typography variant="h6">Étapes</Typography>
+              <Button onClick={handleAddStep}>Ajouter +</Button>
+            </Box>
+          </>
+          {steps &&
+            steps
+              .sort(
+                (a: Pick<StepType, "id" | "title" | "description" | "order">, b: Pick<StepType, "id" | "title" | "description" | "order">) => a.order - b.order
+              )
+              .map((step: Pick<StepType, "id" | "title" | "description" | "order">, index: number) => (
+                <>
+                  <Box key={`group-${step.id}`} sx={{ display: "flex", ml: 2, flexDirection: "column", width: "100%", margin: "0", gap: 1, mb: 3 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, justifyContent: "space-between" }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        <InputLabel>Étape</InputLabel>
+                        <Controller
+                          key={`order-${step.id}`}
+                          name={`step.${index}.order`}
+                          control={control}
+                          defaultValue={step.order}
+                          render={({ field: ctrl }) => (
+                            <TextField {...ctrl} type="number" variant="standard" sx={{ width: "30px" }} onChange={(e) => ctrl.onChange(e.target.value)} />
+                          )}
+                        />
+                      </Box>
+                      <Button onClick={() => setSteps((prev) => prev.filter((s) => s.id !== step.id))} sx={{ minWidth: "unset" }}>
+                        <DeleteIcon color="error" />
+                      </Button>
+                    </Box>
+                    <Controller
+                      key={`label-${step.id}`}
+                      name={step.title}
+                      control={control}
+                      defaultValue={step.title}
+                      rules={{ required: "Le titre est requis" }}
+                      render={({ field: ctrl, fieldState: { error } }) => (
+                        <TextField
+                          label="Titre *"
+                          fullWidth
+                          error={!!error}
+                          helperText={error?.message}
+                          {...ctrl}
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                            ctrl.onChange(e.target.value);
+                          }}
+                        />
+                      )}
+                    />
+                    <Controller
+                      key={`description-${step.id}`}
+                      name={step.description}
+                      control={control}
+                      defaultValue={step.description}
+                      rules={{ required: "La description est requise" }}
+                      render={({ field: ctrl, fieldState: { error } }) => (
+                        <TextField
+                          label="Description *"
+                          error={!!error}
+                          helperText={error?.message}
+                          multiline
+                          type="text"
+                          {...ctrl}
+                          onChange={(e) => ctrl.onChange(e.target.value)}
+                          fullWidth
+                        />
+                      )}
+                    />
+                  </Box>
+                </>
+              ))}
         </form>
       </DialogContent>
       <DialogActions sx={{ justifyContent: initialData?.id ? "space-between" : "flex-end" }}>

@@ -27,7 +27,7 @@ const useResourcesType = (): UseResourcesTypeReturn => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/resource`);
+      const res = await fetch(`${baseUrl}/ressource-type`);
       if (!res.ok) throw new Error(`Erreur lors du chargement : ${res.status}`);
       const data: ResourcesType = await res.json();
       setResourcesType(data);
@@ -42,7 +42,7 @@ const useResourcesType = (): UseResourcesTypeReturn => {
   const createResourceType = async (newResourceType: Omit<ResourceTypeType, 'id' | 'createdAt' | 'updatedAt'>) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/resource`, {
+      const res = await fetch(`${baseUrl}/ressource-type`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newResourceType),
@@ -63,7 +63,7 @@ const useResourcesType = (): UseResourcesTypeReturn => {
   const updateResourceType = async (id: number, updatedFields: Partial<ResourceTypeType>) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/resource/${id}`, {
+      const res = await fetch(`${baseUrl}/ressource-type/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFields),
@@ -84,7 +84,7 @@ const useResourcesType = (): UseResourcesTypeReturn => {
   const deleteResourceType = async (id: number) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/resource/${id}`, {
+      const res = await fetch(`${baseUrl}/ressource-type/${id}`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error(`Erreur lors de la suppression : ${res.status}`);

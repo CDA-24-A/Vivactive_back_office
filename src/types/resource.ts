@@ -12,7 +12,6 @@ export interface ResourceType {
     description: string;
     maxParticipant: number;
     nbParticipant: number;
-    deadline: Date;
     category: CategoryType;
     categoryId: string
     typeRessourceId: string
@@ -28,7 +27,7 @@ export interface ResourceType {
     status: string;
     fileBytes?: File;
     bannerBytes?: File;
-    deadLine?: Date;
+    deadLine?: string;
   }
 
 export interface ResourceAddType
