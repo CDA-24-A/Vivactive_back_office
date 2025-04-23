@@ -1,9 +1,19 @@
 import React from "react";
-import { AppBar, Toolbar, InputBase, IconButton, Box, Avatar, Menu, MenuItem } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Box,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
+import { useUser, useClerk } from "@clerk/clerk-react";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const { user, isSignedIn } = useUser();
+  const { signOut } = useClerk();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -13,23 +23,30 @@ const Header = () => {
     setAnchorEl(null);
   };
 
+  const handleLogout = async () => {
+    handleClose();
+    await signOut();
+  };
+
   return (
     <AppBar position="static" color="default" elevation={1} sx={{ width: "100%", top: 0 }} id="header">
       <Toolbar>
         <Box sx={{ flexGrow: 1, margin: "20px 0px" }}>
           <img src="/logo.png" alt="Vivactive Logo" style={{ height: 45 }} />
         </Box>
-        <Box sx={{ display: "flex", alignItems: "center", bgcolor: "rgba(0,0,0,0.05)", borderRadius: 1, px: 2 }}>
-          <SearchIcon />
-          <InputBase placeholder="Rechercher" sx={{ ml: 1, flex: 1 }} inputProps={{ "aria-label": "search" }} />
-        </Box>
-        <IconButton onClick={handleMenu} color="inherit">
-          <Avatar alt="Photo de profil" src="/path/to/avatar.jpg" />
-        </IconButton>
-        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-          <MenuItem onClick={handleClose}>Profil</MenuItem>
-          <MenuItem onClick={handleClose}>Déconnexion</MenuItem>
-        </Menu>
+
+        {isSignedIn && (
+          <>
+            <IconButton onClick={handleMenu} color="inherit">
+              <Typography variant="body1" fontWeight={600}>
+                {user.firstName} {user.lastName}
+              </Typography>
+            </IconButton>
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+              <MenuItem onClick={handleLogout}>Déconnexion</MenuItem>
+            </Menu>
+          </>
+        )}
       </Toolbar>
     </AppBar>
   );

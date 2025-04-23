@@ -1,15 +1,32 @@
 import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import { useState } from "react";
+import { useSignIn } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [mdp, setMdp] = useState("");
+  const [error, setError] = useState("");
+  const { signIn, setActive, isLoaded } = useSignIn();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Mot de passe:", mdp);
-    // Ajoute ta logique d'authentification ici
+    setError("");
+
+    if (!isLoaded) return;
+
+    try {
+      const result = await signIn.create({
+        identifier: email,
+        password: mdp,
+      });
+
+      await setActive({ session: result.createdSessionId });
+      navigate("/resources");
+    } catch (err: any) {
+      setError(err.errors?.[0]?.message || "Erreur d'authentification");
+    }
   };
 
   return (
@@ -58,16 +75,20 @@ const Login = () => {
             required
             fullWidth
           />
-        <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        fullWidth
-        sx={{ marginTop: 2, color: "white" }}
-        >
-        Se connecter
-        </Button>
-
+          {error && (
+            <Typography color="error" fontSize="0.9rem">
+              {error}
+            </Typography>
+          )}
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ marginTop: 2, color: "white" }}
+          >
+            Se connecter
+          </Button>
         </form>
       </Paper>
     </Box>

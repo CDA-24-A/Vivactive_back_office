@@ -1,15 +1,15 @@
 import useCitizens from "../hooks/useCitizens";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Box, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
-import { useState } from "react";
 import { Citizen } from "../types/citizen";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
+import { useAuthRedirect } from "../utils/redirect";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -36,6 +36,8 @@ const columns: GridColDef[] = [
 ];
 
 const Index = () => {
+  useAuthRedirect();
+
   const { fetchCitizens, citizens, loading, error, createCitizen, updateCitizen, deleteCitizen } = useCitizens();
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
@@ -116,7 +118,6 @@ const Index = () => {
   };
 
   const handleSubmitClick = (data: Citizen) => {
-    console.log("Data submitted:", data);
     if (data.id) {
       updateCitizen(data.id, { ...data, roleId: "7d725762-d488-4238-9414-cc70ec24a6f5" });
     } else {
@@ -126,7 +127,6 @@ const Index = () => {
   };
 
   const handleDeleteClick = (id: number) => {
-    console.log("Delete citizen with ID:", id);
     deleteCitizen(id);
     handleCloseModal();
   };
@@ -146,21 +146,15 @@ const Index = () => {
             columns={columns}
             loading={loading}
             hideFooter={true}
-            onRowDoubleClick={(params) => {
-              handleRowDoubleClick(params);
-            }}
+            onRowDoubleClick={(params) => handleRowDoubleClick(params)}
           />
           <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginTop: "20px" }}>
             <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "flex", flexDirection: "row" }}>
               <InputLabel variant="outlined">Ligne par page</InputLabel>
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
                 value={perPage}
-                label="Ligne par page"
-                sx={{ width: "100%" }}
-                onChange={(data: any) => {
-                  setPerPage(parseInt(data.target.value));
+                onChange={(e: any) => {
+                  setPerPage(parseInt(e.target.value));
                   setPage(1);
                 }}
               >
@@ -171,23 +165,13 @@ const Index = () => {
               </Select>
             </FormControl>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Button
-                onClick={() => {
-                  setPage(page - 1);
-                }}
-                disabled={page === 1}
-              >
+              <Button onClick={() => setPage(page - 1)} disabled={page === 1}>
                 -
               </Button>
               <Typography>
                 {page} sur {count}
               </Typography>
-              <Button
-                onClick={() => {
-                  setPage(page + 1);
-                }}
-                disabled={page === count}
-              >
+              <Button onClick={() => setPage(page + 1)} disabled={page === count}>
                 +
               </Button>
             </Box>
@@ -195,19 +179,18 @@ const Index = () => {
 
           <ModalEdition
             open={open}
-            onClose={() => handleCloseModal()}
+            onClose={handleCloseModal}
             title={formData ? "Modifier un citoyen" : "Créer un citoyen"}
             fields={createCitizenFormConfig}
-            onSubmit={(data) => handleSubmitClick(data)}
+            onSubmit={handleSubmitClick}
             initialData={formData}
             TransitionProps={{ onExited: () => setFormData(null) }}
-            onDelete={(id) => {
-              handleDeleteClick(id);
-            }}
+            onDelete={(id) => handleDeleteClick(id)}
           />
         </Box>
       )}
     </Box>
   );
 };
+
 export default Index;
