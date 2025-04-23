@@ -15,8 +15,8 @@ export interface ResourceType {
     deadline: Date;
     category: CategoryType;
     categoryId: string
-    ressourceTypeId: string
-    ressourceType: ResourceTypeType;
+    typeRessourceId: string
+    typeRessource: ResourceTypeType;
     file: FileType;
     fileId: string
     banner: ImageType;
@@ -28,6 +28,7 @@ export interface ResourceType {
     status: string;
     fileBytes?: File;
     bannerBytes?: File;
+    deadLine?: Date;
   }
 
 export interface ResourceAddType

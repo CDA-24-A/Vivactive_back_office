@@ -7,7 +7,7 @@ interface UseResourcesReturn {
   loading: boolean;
   error: Error | null;
   fetchResources: ({page, perPage}: {page?: number, perPage?: number}) => Promise<void>;
-  createResource: (newResource: FormData) => Promise<void>;
+  createResource: (newResource: Omit<ResourceType, 'id'>) => Promise<void>;
   updateResource: (id: number, updatedFields: Partial<ResourceType>) => Promise<void>;
   deleteResource: (id: number) => Promise<void>;
 }
@@ -38,7 +38,7 @@ const useResources = (): UseResourcesReturn => {
   };
 
   // Créer un nouveau citoyen
-  const createResource = async (newResource: FormData) => {
+  const createResource = async (newResource: Omit<ResourceType, 'id'>) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/Ressource`, {
