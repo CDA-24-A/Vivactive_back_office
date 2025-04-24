@@ -28,6 +28,12 @@ const Header = () => {
     await signOut();
   };
 
+  const getInitials = () => {
+    const first = user?.firstName?.charAt(0) ?? "";
+    const last = user?.lastName?.charAt(0) ?? "";
+    return `${first}${last}`.toUpperCase();
+  };
+
   return (
     <AppBar position="static" color="default" elevation={1} sx={{ width: "100%", top: 0 }} id="header">
       <Toolbar>
@@ -39,7 +45,7 @@ const Header = () => {
           <>
             <IconButton onClick={handleMenu} color="inherit">
               <Typography variant="body1" fontWeight={600}>
-                {user.firstName} {user.lastName}
+                {getInitials()}
               </Typography>
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
