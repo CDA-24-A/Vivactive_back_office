@@ -1,65 +1,80 @@
-// theme.ts
 import { createTheme } from '@mui/material/styles';
 import { frFR } from '@mui/material/locale';
 
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#4BA8B4', // Couleur principale Vivactive
+const theme = createTheme(
+  {
+    palette: {
+      mode: 'light',
+      primary: { main: '#00829f' },
+      secondary: { main: '#7C93F9' },
+      text: { primary: '#1A1A1A', secondary: '#4B5563' },
     },
-    secondary: {
-      main: '#7C93F9', // Accent secondaire
-    },
-    // background: {
-    //   default: '#E3EAFB',
-    //   paper: '#FFFFFF',
-    // },
-    text: {
-      primary: '#1A1A1A',
-      secondary: '#4B5563',
-    },
-  },
-  typography: {
-    fontFamily: 'Inter, Roboto, sans-serif',
-    h1: {
-      fontWeight: 700,
-      fontSize: '2.5rem',
-    },
-    h2: {
-      fontWeight: 600,
-      fontSize: '2rem',
-    },
-    body1: {
-      fontSize: '1rem',
-    },
-  },
-  shape: {
-    borderRadius: 12,
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          borderRadius: 8,
-        },
+    typography: {
+      // Police par défaut pour le corps de texte
+      fontFamily: 'Inter, Roboto, sans-serif',
+
+      // On redéfinit Montserrat pour les titres
+      h1: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 700,
+        fontSize: '2.5rem',
+      },
+      h2: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 600,
+        fontSize: '2rem',
+      },
+      h3: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 500,
+        fontSize: '1.75rem',
+      },
+      h4: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 500,
+        fontSize: '1.5rem',
+      },
+      h5: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 400,
+        fontSize: '1.25rem',
+      },
+      h6: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 400,
+        fontSize: '1rem',
+      },
+      body1: {
+        fontSize: '1rem',
       },
     },
-    MuiIconButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          backgroundColor: '#0195a0',
-          color: "#ffffff",
-          '&:hover': {
-            backgroundColor: '#E3EAFB',
+    shape: {
+      borderRadius: 12,
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            textTransform: 'none',
+            borderRadius: 8,
           },
         },
       },
-    }
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: 8,
+            color: '#ffffff',
+            '&:hover': {
+              backgroundColor: '#fff',
+              color: '#00779f',
+            },
+          },
+        },
+      },
+    },
   },
-  
-},frFR);
+  frFR
+);
 
 export default theme;

@@ -58,7 +58,7 @@ const StatsPage: React.FC = () => {
           mb: 3,
         }}
       >
-        <Typography variant="h4">Statistiques du back-office</Typography>
+        <Typography variant="h1">Statistiques du back-office</Typography>
         <Button variant="outlined" onClick={handleExportCsv}>
           Exporter en CSV
         </Button>
@@ -68,8 +68,8 @@ const StatsPage: React.FC = () => {
         <Grid component="div">
           <Card>
             <CardContent>
-              <Typography variant="h6">Nombre total de citoyens</Typography>
-              <Typography variant="h3">{citizens.total}</Typography>
+              <Typography>Nombre total de citoyens</Typography>
+              <Typography>{citizens.total}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -77,8 +77,8 @@ const StatsPage: React.FC = () => {
         <Grid component="div">
           <Card>
             <CardContent>
-              <Typography variant="h6">Nombre total de ressources</Typography>
-              <Typography variant="h3">{resources.total}</Typography>
+              <Typography>Nombre total de ressources</Typography>
+              <Typography>{resources.total}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -86,9 +86,7 @@ const StatsPage: React.FC = () => {
         <Grid component="div">
           <Card>
             <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Répartition Citoyens vs Ressources
-              </Typography>
+              <Typography gutterBottom>Répartition Citoyens vs Ressources</Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>

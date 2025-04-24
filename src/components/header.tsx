@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Box,
-  Menu,
-  MenuItem,
-  Typography,
-} from "@mui/material";
+import { AppBar, Toolbar, IconButton, Box, Menu, MenuItem, Typography } from "@mui/material";
 import { useUser, useClerk } from "@clerk/clerk-react";
 
 const Header = () => {
@@ -43,7 +35,18 @@ const Header = () => {
 
         {isSignedIn && (
           <>
-            <IconButton onClick={handleMenu} color="inherit">
+            <IconButton
+              onClick={handleMenu}
+              color="inherit"
+              sx={{
+                textTransform: "uppercase",
+                borderRadius: 50,
+                backgroundColor: "#00779f",
+                width: 40,
+                height: 40,
+                color: "#fff",
+              }}
+            >
               <Typography variant="body1" fontWeight={600}>
                 {getInitials()}
               </Typography>
