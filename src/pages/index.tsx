@@ -4,7 +4,7 @@ import { Box, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui
 import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
-import { Citizen } from "../types/citizen";
+import { CitizenType } from "../types/citizen";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
@@ -46,7 +46,7 @@ const Index = () => {
   const [count, setCount] = useState<number>(1);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
   const [search, setSearch] = useState<string>("");
-  const [citizensFiltered, setCitiensFiltered] = useState<Citizen[]>([]);
+  const [citizensFiltered, setCitiensFiltered] = useState<CitizenType[]>([]);
 
   const debouncedSearch = useDebounce(search, 500);
 
@@ -118,7 +118,7 @@ const Index = () => {
     setOpen(true);
   };
 
-  const handleSubmitClick = (data: Citizen) => {
+  const handleSubmitClick = (data: CitizenType) => {
     if (data.id) {
       updateCitizen(data.id, { ...data, roleId: "7d725762-d488-4238-9414-cc70ec24a6f5" });
     } else {
@@ -137,7 +137,8 @@ const Index = () => {
   };
 
   return (
-    <Box sx={{ width: "100%", display: "flex", flexDirection: "column", height: "100%" }}>
+    <Box sx={{ width: "100%", display: "flex", flexDirection: "column", height: "100%", backgroundColor: 'red' }}>
+      <pre>{JSON.stringify(error)}</pre>
       {error && <ErrorComponent errorMessage={error?.message} />}
       {!loading && !error && (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
