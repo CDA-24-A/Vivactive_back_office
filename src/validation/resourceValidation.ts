@@ -23,20 +23,11 @@ export const FormSchema = z.object({
     typeRessourceId: z.string({
         required_error: "Le type de ressource est requis",
     }),
-    steps: z.array(
-        z.object({
-            title: z.string({
-                required_error: "Le titre est requise",
-            }).min(10, {
-                message: "Le titre doit contenir au moins 1 caractère",}),
-            description: z.string({
-                required_error: "La description est requise",
-            }),
-            order: z.number({
-                required_error: "L'ordre est requis",
-            }).min(1, {
-                message: "L'ordre doit être supérieur à 0",
-            }),})),
+    steps: z
+    .array(
+      z.object({
+        title: z.string().min(1),
+        description: z.string().min(1),
+        order: z.number().min(1),
+      }))
 })
-
-export type FormSchemaType = z.infer<typeof FormSchema>;

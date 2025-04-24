@@ -1,4 +1,4 @@
-// GenericModal.tsx
+// // GenericModal.tsx
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
@@ -25,8 +25,7 @@ import { StepType } from "../types/step";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { FormSchema, FormSchemaType } from "../validation/resourceValidation";
+import { z } from "zod";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -41,7 +40,18 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 export interface FieldConfig {
-  name: "title" | "description" | "maxParticipant" | "nbParticipant" | "deadLine" | "categoryId" | "isValidate" | "typeRessourceId";
+  name:
+    | "title"
+    | "description"
+    | "maxParticipant"
+    | "nbParticipant"
+    | "deadLine"
+    | "categoryId"
+    | "isValidate"
+    | "typeRessourceId"
+    | "name"
+    | "email"
+    | "password";
   label: string;
   type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "date" | "checkbox" | "textArea";
   defaultValue?: string | number;
@@ -56,13 +66,15 @@ interface GenericModalProps {
   title: string;
   fields: FieldConfig[];
   onSubmit: (data: any) => void;
-  onDelete?: (id: number) => void;
+  onDelete?: (id: string) => void;
   initialData?: any;
   TransitionProps?: {
     onExited: () => void;
   };
   onSubmitFile?: (file: File) => void;
   onSubmitBanner?: (file: File) => void;
+  FormSchema: any;
+  interfaceActive?: string;
 }
 
 const GenericModal: React.FC<GenericModalProps> = ({
@@ -76,8 +88,14 @@ const GenericModal: React.FC<GenericModalProps> = ({
   TransitionProps,
   onSubmitFile,
   onSubmitBanner,
+  FormSchema,
+  interfaceActive,
 }) => {
   const isEdit = Boolean(initialData);
+
+  console.log("isEdit", isEdit, "initialData", initialData);
+
+  type FormSchemaType = z.infer<typeof FormSchema>;
 
   const {
     handleSubmit,
@@ -90,9 +108,6 @@ const GenericModal: React.FC<GenericModalProps> = ({
     defaultValues: initialData?.row ? { ...initialData.row, steps: [] } : {},
   });
 
-  console.log("---------------->", initialData);
-  console.log("formState", dirtyFields, "errors =>", errors);
-
   // État pour contrôler l'affichage du mot de passe pour chaque champ
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
   const [steps, setSteps] = useState<Pick<StepType, "id" | "title" | "description" | "order">[]>([]);
@@ -100,7 +115,6 @@ const GenericModal: React.FC<GenericModalProps> = ({
   useEffect(() => {
     // Reset du formulaire avec initialData
     reset(initialData?.row || {});
-    console.log("initialData", initialData?.row || {});
 
     // S'il y a des étapes, on les ajoute au state
     if (initialData?.row?.step) {
@@ -131,16 +145,14 @@ const GenericModal: React.FC<GenericModalProps> = ({
 
   // Construction du payload de PATCH
   const handlePatch = (data: any) => {
-    const payload = Object.keys({ ...dirtyFields, id: initialData?.id }).reduce((acc, key) => {
-      acc[key] = data[key];
-      return acc;
-    }, {} as Record<string, any>);
+    const payload: Record<string, any> = { id: initialData?.id };
+    Object.keys({ ...dirtyFields }).forEach((key) => {
+      payload[key] = data[key];
+    });
     onSubmit(steps.length > 0 ? { ...payload, step: steps } : payload);
   };
 
   const handleAddStep = () => {
-    console.log("handleAddStep", steps);
-
     const newStep: Pick<StepType, "id" | "title" | "description" | "order"> = {
       id: "",
       title: "",
@@ -152,7 +164,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
 
   const handleCreate = (payload: FormSchemaType) => {
     console.log("handleCreate", payload);
-    const resource = { ...payload, step: payload.steps };
+    const resource = { ...payload, step: payload.steps, id: initialData?.id };
     delete resource.steps;
 
     console.log("resource", resource);
@@ -173,7 +185,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
             return (
               <Controller
                 key={field.name}
-                name={field.name}
+                name={field.name as keyof FormSchemaType}
                 control={control}
                 defaultValue={
                   field.type === "dropdown"
@@ -251,29 +263,48 @@ const GenericModal: React.FC<GenericModalProps> = ({
                         )} */}
                       </>
                     )}
-                    {field.name === "isValidate" && (
+                    {/* {field.name === "isValidate" && (
                       <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
                         <Typography>{field.label}</Typography>
                         <input type="checkbox" {...register("isValidate")} style={{ marginLeft: "8px" }} />
                       </Box>
-                    )}
+                    )} */}
                   </Box>
                 )}
               />
             );
           })}
-          <>
-            <Divider sx={{ margin: "1rem 0" }} />
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Typography variant="h6">Étapes</Typography>
-              <Button onClick={handleAddStep}>Ajouter +</Button>
-            </Box>
-          </>
+          {interfaceActive === "resource" && (
+            <>
+              <Divider sx={{ margin: "1rem 0" }} />
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <Typography variant="h6">Étapes</Typography>
+                <Button onClick={handleAddStep}>Ajouter +</Button>
+              </Box>
+            </>
+          )}
           {steps &&
-            steps.map((step: Pick<StepType, "id" | "title" | "description" | "order">, index: number) => (
+            steps.map((step: any, index: number) => (
               <React.Fragment key={step.id}>
-                <Box sx={{ display: "flex", ml: 2, flexDirection: "column", width: "100%", margin: "0", gap: 1, mb: 3 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2, justifyContent: "space-between" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    ml: 2,
+                    flexDirection: "column",
+                    width: "100%",
+                    margin: "0",
+                    gap: 1,
+                    mb: 3,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      justifyContent: "space-between",
+                    }}
+                  >
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                       <InputLabel>Étape</InputLabel>
                       <Controller
@@ -297,20 +328,16 @@ const GenericModal: React.FC<GenericModalProps> = ({
                     control={control}
                     defaultValue={step.title}
                     render={({ field: ctrl, fieldState: { error } }) => (
-                      <div>
-                        {JSON.stringify(error)}
-                        {/* <input type="text" {...ctrl} /> */}
-                        <TextField
-                          label="Titre *"
-                          fullWidth
-                          error={!!error}
-                          helperText={errors?.steps?.[index]?.title?.message}
-                          {...ctrl}
-                          onChange={(e) => {
-                            ctrl.onChange(e.target.value);
-                          }}
-                        />
-                      </div>
+                      <TextField
+                        label="Titre *"
+                        fullWidth
+                        error={!!error}
+                        helperText={error?.message}
+                        {...ctrl}
+                        onChange={(e) => {
+                          ctrl.onChange(e.target.value);
+                        }}
+                      />
                     )}
                   />
                   <Controller

@@ -13,6 +13,7 @@ import { useDebounce } from "../hooks/useDebounce";
 import useCategory from "../hooks/useCategory";
 import useResourcesType from "../hooks/useResourceType";
 import { formatISOToDateInput } from "../utils/date";
+import { FormSchema, FormSchemaType } from "../validation/resourceValidation";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -122,22 +123,18 @@ const Index = () => {
 
   useEffect(() => {
     const filtered = resources.data.filter((c) => `${c.title} ${c.description}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
-    console.log(filtered);
 
     setResourcesFiltered(filtered);
   }, [debouncedSearch, resources]);
 
   const handleRowDoubleClick = async (rowData: any) => {
     await fetchResource(rowData.id).then((resource) => {
-      console.log("Resource fetched:", resource);
       setFormData({ ...rowData, row: { ...resource, deadLine: resource?.deadLine && formatISOToDateInput(resource.deadLine) } });
     });
     setOpen(true);
   };
 
   const handleSubmitClick = (data: ResourceType) => {
-    console.log("Form submitted:", data);
-
     if (data.id) {
       updateResource(data.id, {
         ...data,
@@ -151,15 +148,12 @@ const Index = () => {
         nbParticipant: Number(data.nbParticipant),
         maxParticipant: Number(data.maxParticipant),
         deadLine: data.deadLine ? new Date(data.deadLine).toISOString() : new Date().toISOString(),
-      }).then((res) => {
-        console.log("Resource created:", res);
       });
     }
     handleCloseModal();
   };
 
   const handleDeleteClick = (id: number) => {
-    console.log("Delete citizen with ID:", id);
     deleteResource(id);
     handleCloseModal();
   };
@@ -169,12 +163,10 @@ const Index = () => {
   };
 
   const handleFileChange = (data: File) => {
-    console.log("File submitted:", data);
     setFile(data);
   };
 
   const handleBannerChange = (data: File) => {
-    console.log("Banner submitted:", data);
     setBanner(banner);
   };
 
@@ -190,8 +182,6 @@ const Index = () => {
             loading={loading}
             hideFooter={true}
             onRowDoubleClick={(params) => {
-              console.log("Row double clicked:", params);
-
               handleRowDoubleClick(params);
             }}
           />
@@ -239,6 +229,7 @@ const Index = () => {
           </Box>
           <ModalEdition
             open={open}
+            FormSchema={FormSchema}
             onClose={() => handleCloseModal()}
             title={formData ? "Modifier une ressource" : "Créer une ressource"}
             fields={ressourceFormConfig}

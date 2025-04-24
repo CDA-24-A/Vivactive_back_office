@@ -116,7 +116,6 @@ const Index = () => {
   };
 
   const handleSubmitClick = (data: Citizen) => {
-    console.log("Data submitted:", data);
     if (data.id) {
       updateCitizen(data.id, { ...data, roleId: "7d725762-d488-4238-9414-cc70ec24a6f5" });
     } else {
@@ -126,7 +125,6 @@ const Index = () => {
   };
 
   const handleDeleteClick = (id: number) => {
-    console.log("Delete citizen with ID:", id);
     deleteCitizen(id);
     handleCloseModal();
   };

@@ -15,7 +15,6 @@ function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
 
   useEffect(() => {
-    console.log(document.querySelector("#header"));
     setHeaderHeight(document.querySelector("#header")?.clientHeight || 0);
   }, []);
 

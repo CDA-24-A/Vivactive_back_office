@@ -7,8 +7,7 @@ const Login = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Mot de passe:", mdp);
+
     // Ajoute ta logique d'authentification ici
   };
 
@@ -36,38 +35,12 @@ const Login = () => {
         <Typography variant="h5" align="center" sx={{ marginBottom: 2 }}>
           Connexion
         </Typography>
-        <form
-          onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: 16 }}
-        >
-          <TextField
-            label="Email"
-            type="email"
-            variant="outlined"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            fullWidth
-          />
-          <TextField
-            label="Mot de passe"
-            type="password"
-            variant="outlined"
-            value={mdp}
-            onChange={(e) => setMdp(e.target.value)}
-            required
-            fullWidth
-          />
-        <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        fullWidth
-        sx={{ marginTop: 2, color: "white" }}
-        >
-        Se connecter
-        </Button>
-
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <TextField label="Email" type="email" variant="outlined" value={email} onChange={(e) => setEmail(e.target.value)} required fullWidth />
+          <TextField label="Mot de passe" type="password" variant="outlined" value={mdp} onChange={(e) => setMdp(e.target.value)} required fullWidth />
+          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: 2, color: "white" }}>
+            Se connecter
+          </Button>
         </form>
       </Paper>
     </Box>
