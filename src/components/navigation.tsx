@@ -1,12 +1,18 @@
 import CategoryIcon from "@mui/icons-material/Category";
 import IconButton from "@mui/material/IconButton";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
+import InsertChartIcon from "@mui/icons-material/InsertChart";
 import GroupIcon from "@mui/icons-material/Group";
 import { NavLink } from "react-router-dom";
 
 const Navigation = () => {
   return (
     <nav className="navigation">
+      <NavLink to="/dashboard" className={({ isActive }) => (isActive ? "selected" : "")}>
+        <IconButton size="large" aria-label="Voir le tableau de bord">
+          <InsertChartIcon />
+        </IconButton>
+      </NavLink>
       <NavLink to="/users" className={({ isActive }) => (isActive ? "selected" : "")}>
         <IconButton size="large" aria-label="Voir les utilisateurs">
           <GroupIcon />
