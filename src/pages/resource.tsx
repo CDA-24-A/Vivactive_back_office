@@ -129,7 +129,15 @@ const Index = () => {
 
   const handleRowDoubleClick = async (rowData: any) => {
     await fetchResource(rowData.id).then((resource) => {
-      setFormData({ ...rowData, row: { ...resource, deadLine: resource?.deadLine && formatISOToDateInput(resource.deadLine) } });
+      setFormData({
+        ...rowData,
+        row: {
+          ...resource,
+          deadLine: resource?.deadLine && formatISOToDateInput(resource.deadLine),
+          categoryId: resource.category.id,
+          typeRessourceId: resource.typeRessource.id,
+        },
+      });
     });
     setOpen(true);
   };
@@ -230,6 +238,7 @@ const Index = () => {
           </Box>
           <ModalEdition
             open={open}
+            FormSchema={FormSchema}
             onClose={() => handleCloseModal()}
             title={formData ? "Modifier une ressource" : "Créer une ressource"}
             fields={ressourceFormConfig}

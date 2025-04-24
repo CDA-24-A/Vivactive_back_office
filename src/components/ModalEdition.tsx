@@ -172,7 +172,9 @@ const GenericModal: React.FC<GenericModalProps> = ({
   const handleCreate = (payload: FormSchemaType) => {
     const resource = { ...payload, step: payload.steps, id: initialData?.id };
     delete resource.steps;
-    onSubmit(steps.length > 0 ? resource : payload);
+    if (onSubmit) {
+      onSubmit(steps.length > 0 ? resource : payload);
+    }
   };
 
   return (
@@ -195,65 +197,68 @@ const GenericModal: React.FC<GenericModalProps> = ({
                       : initialData?.row?.[field.name] ?? ""
                     : field.defaultValue ?? ""
                 }
-                render={({ field: ctrl, fieldState: { error } }) => (
-                  <Box sx={{ display: "flex", alignItems: "center", width: "100%", mt: 2 }}>
-                    {field.type !== "file" && field.type !== "banner" && field.type !== "checkbox" && (
-                      <TextField
-                        {...ctrl}
-                        label={field.label}
-                        value={ctrl.value ?? ""}
-                        select={field.type === "dropdown"}
-                        type={type}
-                        multiline={field.type === "textArea"}
-                        fullWidth
-                        variant="outlined"
-                        error={!!error}
-                        helperText={error?.message}
-                        InputProps={
-                          isPwd
-                            ? {
-                                endAdornment: (
-                                  <InputAdornment position="end">
-                                    <IconButton aria-label="toggle password visibility" onClick={() => handleClickShowPassword(field.name)} edge="end">
-                                      {showPassword[field.name] ? <VisibilityOff /> : <Visibility />}
-                                    </IconButton>
-                                  </InputAdornment>
-                                ),
-                              }
-                            : undefined
-                        }
-                      >
-                        {field.options &&
-                          field.options.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                              {option.label}
-                            </MenuItem>
-                          ))}
-                      </TextField>
-                    )}
-                    {(field.type === "file" || field.type === "banner") && (
-                      <>
-                        <Button component="label" role={undefined} variant="contained" tabIndex={-1} startIcon={<CloudUploadIcon />}>
-                          {field.label}
-                          <VisuallyHiddenInput
-                            name={ctrl.name}
-                            ref={ctrl.ref}
-                            onBlur={ctrl.onBlur}
-                            type="file"
-                            onChange={(event) => {
-                              const file = event.target.files?.[0] ?? null;
-                              ctrl.onChange(file);
-                              if (onSubmitBanner && onSubmitFile && event.target.files && event.target.files.length > 0) {
-                                if (field.type === "banner") {
-                                  onSubmitBanner(event.target.files[0]);
-                                } else {
-                                  onSubmitFile(event.target.files[0]);
+                render={({ field: ctrl, fieldState: { error } }) => {
+                  const rawValue = ctrl.value;
+                  const displayValue = field.dataFormat && rawValue != null ? field.dataFormat(rawValue) : rawValue;
+                  return (
+                    <Box sx={{ display: "flex", alignItems: "center", width: "100%", mt: 2 }}>
+                      {field.type !== "file" && field.type !== "banner" && field.type !== "checkbox" && (
+                        <TextField
+                          {...ctrl}
+                          label={field.label}
+                          value={displayValue}
+                          select={field.type === "dropdown"}
+                          type={type}
+                          multiline={field.type === "textArea"}
+                          fullWidth
+                          variant="outlined"
+                          error={!!error}
+                          helperText={error?.message}
+                          InputProps={
+                            isPwd
+                              ? {
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      <IconButton aria-label="toggle password visibility" onClick={() => handleClickShowPassword(field.name)} edge="end">
+                                        {showPassword[field.name] ? <VisibilityOff /> : <Visibility />}
+                                      </IconButton>
+                                    </InputAdornment>
+                                  ),
                                 }
-                              }
-                            }}
-                          />
-                        </Button>
-                        {/* {ctrl.value && (
+                              : undefined
+                          }
+                        >
+                          {field.options &&
+                            field.options.map((option) => (
+                              <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                              </MenuItem>
+                            ))}
+                        </TextField>
+                      )}
+                      {(field.type === "file" || field.type === "banner") && (
+                        <>
+                          <Button component="label" role={undefined} variant="contained" tabIndex={-1} startIcon={<CloudUploadIcon />}>
+                            {field.label}
+                            <VisuallyHiddenInput
+                              name={ctrl.name}
+                              ref={ctrl.ref}
+                              onBlur={ctrl.onBlur}
+                              type="file"
+                              onChange={(event) => {
+                                const file = event.target.files?.[0] ?? null;
+                                ctrl.onChange(file);
+                                if (onSubmitBanner && onSubmitFile && event.target.files && event.target.files.length > 0) {
+                                  if (field.type === "banner") {
+                                    onSubmitBanner(event.target.files[0]);
+                                  } else {
+                                    onSubmitFile(event.target.files[0]);
+                                  }
+                                }
+                              }}
+                            />
+                          </Button>
+                          {/* {ctrl.value && (
                           <Box sx={{ ml: 2 }}>
                             {field.type === "banner" ? (
                               <img src={URL.createObjectURL(ctrl.value)} alt="Banner" style={{ width: "100px", height: "100px" }} />
@@ -262,16 +267,17 @@ const GenericModal: React.FC<GenericModalProps> = ({
                             )}
                           </Box>
                         )} */}
-                      </>
-                    )}
-                    {field.name === "isValidate" && (
-                      <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
-                        <Typography>{field.label}</Typography>
-                        <input type="checkbox" {...register("isValidate")} style={{ marginLeft: "8px" }} />
-                      </Box>
-                    )}
-                  </Box>
-                )}
+                        </>
+                      )}
+                      {field.name === "isValidate" && (
+                        <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
+                          <Typography>{field.label}</Typography>
+                          <input type="checkbox" {...register("isValidate")} style={{ marginLeft: "8px" }} />
+                        </Box>
+                      )}
+                    </Box>
+                  );
+                }}
               />
             );
           })}

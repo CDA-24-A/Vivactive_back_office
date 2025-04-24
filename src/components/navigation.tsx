@@ -6,6 +6,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import { NavLink } from "react-router-dom";
 import FolderIcon from "@mui/icons-material/Folder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
+import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 
 const Navigation = () => {
   return (
@@ -22,7 +23,7 @@ const Navigation = () => {
       </NavLink>
       <NavLink to="/roles" className={({ isActive }) => (isActive ? "selected" : "")}>
         <IconButton size="large" aria-label="Voir les rôles">
-          <GroupIcon />
+          <MilitaryTechIcon />
         </IconButton>
       </NavLink>
       <NavLink to="/resources" className={({ isActive }) => (isActive ? "selected" : "")}>
