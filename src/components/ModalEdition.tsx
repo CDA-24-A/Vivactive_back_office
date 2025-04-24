@@ -56,11 +56,13 @@ export interface FieldConfig {
     | "bannerId"
     | "fileId";
   label: string;
-  type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "date" | "checkbox" | "textArea";
+  type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "textArea" | "date" | "checkbox" | "textArea";
   defaultValue?: string | number;
   validation?: Record<string, any>;
   showOn: "create" | "edit" | "always";
   options?: Array<{ value: string | number; label: string }> | null;
+  isDisabled?: boolean;
+  dataFormat?: (value: any) => string;
 }
 
 interface GenericModalProps {
@@ -68,7 +70,7 @@ interface GenericModalProps {
   onClose: () => void;
   title: string;
   fields: FieldConfig[];
-  onSubmit: (data: any) => void;
+  onSubmit?: (data: any) => void;
   onDelete?: (id: string) => void;
   initialData?: any;
   TransitionProps?: {
@@ -152,7 +154,9 @@ const GenericModal: React.FC<GenericModalProps> = ({
     Object.keys({ ...dirtyFields }).forEach((key) => {
       payload[key] = data[key];
     });
-    onSubmit(steps.length > 0 ? { ...payload, step: steps } : payload);
+    if (onSubmit) {
+      onSubmit(steps.length > 0 ? { ...payload, step: steps } : payload);
+    }
   };
 
   const handleAddStep = () => {
@@ -366,9 +370,11 @@ const GenericModal: React.FC<GenericModalProps> = ({
           <Button onClick={onClose} color="secondary">
             Annuler
           </Button>
-          <Button type="submit" form="generic-form" color="primary" variant="contained">
-            Valider
-          </Button>
+          {onSubmit && (
+            <Button type="submit" form="generic-form" color="primary" variant="contained">
+              Valider
+            </Button>
+          )}
         </Box>
       </DialogActions>
     </Dialog>

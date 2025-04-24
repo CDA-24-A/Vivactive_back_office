@@ -14,6 +14,7 @@ import StatsPage from "./pages/dashbord";
 import ResourceType from "./pages/resourceType";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import Erreur401 from "./pages/Error401";
+import Comment from "./pages/comment";
 
 function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -48,6 +49,7 @@ function App() {
         />
         <Route path="*" element={<Erreur404 />} />
         <Route path="/401" element={<Erreur401 />} />
+        <Route path="/comments" element={<Comment />} />
       </Routes>
     </div>
   );
