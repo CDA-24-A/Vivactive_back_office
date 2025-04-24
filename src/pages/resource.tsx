@@ -56,7 +56,7 @@ const columns: GridColDef[] = [
 ];
 
 const Index = () => {
-  const { fetchResources, resources, loading, error, createResource, updateResource, deleteResource, fetchResource } = useResources();
+  const { fetchResources, resources, loading, error, createResource, updateResource, deleteResource, fetchResource, validateResource } = useResources();
   const { fetchCategories, categories } = useCategory();
   const { fetchResourcesType, resourcesType } = useResourcesType();
   const [page, setPage] = useState<number>(1);
@@ -145,6 +145,7 @@ const Index = () => {
   const handleSubmitClick = (data: ResourceType) => {
     if (data.id) {
       const { step, ...rest } = data;
+      if (data.isValidate) validateResource(data.id.toString());
       updateResource(data.id.toString(), {
         ...rest,
         nbParticipant: rest.nbParticipant && Number(rest.nbParticipant),
@@ -194,7 +195,7 @@ const Index = () => {
               handleRowDoubleClick(params);
             }}
           />
-          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginTop: "20px" }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
             <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "flex", flexDirection: "row" }}>
               <InputLabel variant="outlined">Ligne par page</InputLabel>
               <Select

@@ -11,6 +11,7 @@ interface UseResourcesReturn {
   fetchResource: (id: string) => Promise<ResourceType>;
   createResource: (newResource: Omit<ResourceType, 'id'>) => Promise<ResourceType>;
   updateResource: (id: string, updatedFields: Partial<ResourceType>) => Promise<ResourceType>;
+  validateResource: (id: string) => Promise<void>;
   deleteResource: (id: string) => Promise<void>;
 }
 
@@ -110,6 +111,24 @@ const useResources = (): UseResourcesReturn => {
     }
   };
 
+  const validateResource = async (id: string) => {
+    setError(null);
+    try {
+      const res = await fetch(`${baseUrl}/Ressource/validate/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isValidated: true })
+      });
+      if (!res.ok) throw new Error(`Erreur lors de la validation : ${res.status}`);
+      const updatedResource: ResourceAddType = await res.json();
+      setResources((prev) => ({data: prev.data.map((resource) => (resource.id.toString() === id ? updatedResource.data : resource)), message: updatedResource.message, total: prev.total}));
+      
+    } catch (
+      err: any) {
+      setError(err);
+    }
+  };
+
   return {
     resources,
     resource,
@@ -119,6 +138,7 @@ const useResources = (): UseResourcesReturn => {
     fetchResource,
     createResource,
     updateResource,
+    validateResource,
     deleteResource
   };
 };

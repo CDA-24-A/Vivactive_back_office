@@ -172,7 +172,7 @@ const Index = () => {
             hideFooter={true}
             onRowDoubleClick={(params) => handleRowDoubleClick(params)}
           />
-          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginTop: "20px" }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
             <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "flex", flexDirection: "row" }}>
               <InputLabel variant="outlined">Ligne par page</InputLabel>
               <Select

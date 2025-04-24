@@ -49,7 +49,7 @@ const StatsPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 4 }}>
+    <Box sx={{ p: 4, width: "100%" }}>
       <Box
         sx={{
           display: "flex",
