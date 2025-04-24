@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 
-export const useAuthRedirect = () => {
+export const useAuthRedirect = (p0: (roleName: any) => void) => {
   const { isSignedIn, isLoaded } = useUser();
+ 
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {

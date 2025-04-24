@@ -6,9 +6,11 @@ import "@fontsource/roboto/700.css";
 import { Route, Routes } from "react-router-dom";
 import Index from "./pages";
 import Erreur404 from "./pages/erreur404";
+
 import Resource from "./pages/resource";
 import Login from "./pages/login";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
+import Erreur401 from "./pages/Error401";
 
 function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -36,6 +38,7 @@ function App() {
           }
         />
         <Route path="*" element={<Erreur404 />} />
+        <Route path="/401" element={<Erreur401 />} />
       </Routes>
     </div>
   );
