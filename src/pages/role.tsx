@@ -73,7 +73,7 @@ const Role = () => {
       {error && <ErrorComponent errorMessage={error?.message} />}
       {!loading && !error && (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <HeaderGrid title="Liste des rôles" onAddClick={() => {}} searchValue={search} onSearchChange={setSearch} />
+          <HeaderGrid title="Liste des rôles" searchValue={search} onSearchChange={setSearch} />
           <GridComponent
             rows={rolesFiltered}
             columns={columns}

@@ -11,6 +11,7 @@ import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
 import useRoles from "../hooks/useRoles";
+import { FormSchema } from "../validation/citizenValidation";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -121,7 +122,6 @@ const Index = () => {
   };
 
   const handleSubmitClick = (data: CitizenType) => {
-    console.log("Data submitted:", data);
     if (data.id) {
       updateCitizen(data.id, data);
     } else {
@@ -131,7 +131,6 @@ const Index = () => {
   };
 
   const handleDeleteClick = (id: string) => {
-    console.log("Delete citizen with ID:", id);
     deleteCitizen(id);
     handleCloseModal();
   };
@@ -200,6 +199,7 @@ const Index = () => {
 
           <ModalEdition
             open={open}
+            FormSchema={FormSchema}
             onClose={() => handleCloseModal()}
             title={formData ? "Modifier un citoyen" : "Créer un citoyen"}
             fields={createCitizenFormConfig}
