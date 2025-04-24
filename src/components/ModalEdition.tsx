@@ -27,6 +27,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
+import { FormSchema } from "../validation/resourceValidation";
+
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -77,7 +79,6 @@ interface GenericModalProps {
   };
   onSubmitFile?: (file: File) => void;
   onSubmitBanner?: (file: File) => void;
-  FormSchema: any;
   interfaceActive?: string;
 }
 
@@ -92,7 +93,6 @@ const GenericModal: React.FC<GenericModalProps> = ({
   TransitionProps,
   onSubmitFile,
   onSubmitBanner,
-  FormSchema,
   interfaceActive,
 }) => {
   const isEdit = Boolean(initialData);
@@ -107,10 +107,12 @@ const GenericModal: React.FC<GenericModalProps> = ({
     reset,
     register,
     formState: { dirtyFields, errors },
-  } = useForm<FormSchemaType>({
+  } = useForm({
     resolver: zodResolver(FormSchema),
-    defaultValues: initialData?.row ? { ...initialData.row, steps: [] } : {},
+    defaultValues: initialData?.row ? initialData.row : {},
   });
+
+  console.log("🚧 -> :110 -> errors 🚧", errors);
 
   // État pour contrôler l'affichage du mot de passe pour chaque champ
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
@@ -167,13 +169,14 @@ const GenericModal: React.FC<GenericModalProps> = ({
   };
 
   const handleCreate = (payload: FormSchemaType) => {
-    console.log("handleCreate", payload);
-    const resource = { ...payload, step: payload.steps, id: initialData?.id };
-    delete resource.steps;
+    console.log("🚧 -> :172 -> handleCreate -> payload 🚧", payload);
+    // console.log("handleCreate", payload);
+    // const resource = { ...payload, step: payload.steps, id: initialData?.id };
+    // delete resource.steps;
 
-    console.log("resource", resource);
+    // console.log("resource", resource);
 
-    onSubmit(steps.length > 0 ? resource : payload);
+    // onSubmit(steps.length > 0 ? resource : payload);
   };
 
   return (
@@ -289,7 +292,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
           )}
           {steps &&
             steps.map((step: any, index: number) => (
-              <React.Fragment key={step.id}>
+              <React.Fragment key={`step-${index}`}>
                 <Box
                   sx={{
                     display: "flex",

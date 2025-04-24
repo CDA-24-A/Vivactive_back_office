@@ -29,5 +29,5 @@ export const FormSchema = z.object({
         title: z.string().min(1),
         description: z.string().min(1),
         order: z.number().min(1),
-      }))
+      })).optional(),
 })

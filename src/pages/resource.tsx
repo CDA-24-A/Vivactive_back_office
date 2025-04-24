@@ -230,7 +230,6 @@ const Index = () => {
           </Box>
           <ModalEdition
             open={open}
-            FormSchema={FormSchema}
             onClose={() => handleCloseModal()}
             title={formData ? "Modifier une ressource" : "Créer une ressource"}
             fields={ressourceFormConfig}
