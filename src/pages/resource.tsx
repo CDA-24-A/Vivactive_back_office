@@ -13,7 +13,7 @@ import { useDebounce } from "../hooks/useDebounce";
 import useCategory from "../hooks/useCategory";
 import useResourcesType from "../hooks/useResourceType";
 import { formatISOToDateInput } from "../utils/date";
-import { FormSchema, FormSchemaType } from "../validation/resourceValidation";
+import { FormSchema } from "../validation/resourceValidation";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -109,8 +109,8 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    fetchResourcesType({ page: page, perPage: perPage });
-  }, [perPage, page]);
+    fetchResourcesType();
+  }, []);
 
   useEffect(() => {
     fetchResources({ page: page, perPage: perPage });
@@ -136,11 +136,12 @@ const Index = () => {
 
   const handleSubmitClick = (data: ResourceType) => {
     if (data.id) {
-      updateResource(data.id, {
-        ...data,
-        nbParticipant: data.nbParticipant && Number(data.nbParticipant),
-        maxParticipant: data.maxParticipant && Number(data.maxParticipant),
-        deadLine: data.deadLine && new Date(data.deadLine).toISOString(),
+      const { step, ...rest } = data;
+      updateResource(data.id.toString(), {
+        ...rest,
+        nbParticipant: rest.nbParticipant && Number(rest.nbParticipant),
+        maxParticipant: rest.maxParticipant && Number(rest.maxParticipant),
+        deadLine: rest.deadLine && new Date(rest.deadLine).toISOString(),
       });
     } else {
       createResource({
@@ -153,7 +154,7 @@ const Index = () => {
     handleCloseModal();
   };
 
-  const handleDeleteClick = (id: number) => {
+  const handleDeleteClick = (id: string) => {
     deleteResource(id);
     handleCloseModal();
   };
@@ -241,6 +242,7 @@ const Index = () => {
             }}
             onSubmitFile={(data) => handleFileChange(data)}
             onSubmitBanner={(data) => handleBannerChange(data)}
+            interfaceActive="resource"
           />
         </Box>
       )}

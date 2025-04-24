@@ -8,8 +8,8 @@ interface UseCitizensReturn {
   error: Error | null;
   fetchCitizens: ({page, perPage}: {page?: number, perPage?: number}) => Promise<void>;
   createCitizen: (newCitizen: Omit<CitizenType, 'id'>) => Promise<void>;
-  updateCitizen: (id: number, updatedFields: Partial<CitizenType>) => Promise<void>;
-  deleteCitizen: (id: number) => Promise<void>;
+  updateCitizen: (id: string, updatedFields: Partial<CitizenType>) => Promise<void>;
+  deleteCitizen: (id: string) => Promise<void>;
 }
 
 const useCitizens = (): UseCitizensReturn => {
@@ -55,7 +55,7 @@ const useCitizens = (): UseCitizensReturn => {
   };
 
   // Mettre à jour un citoyen
-  const updateCitizen = async (id: number, updatedFields: Partial<CitizenType>) => {
+  const updateCitizen = async (id: string, updatedFields: Partial<CitizenType>) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/citizen/${id}`, {
@@ -65,14 +65,14 @@ const useCitizens = (): UseCitizensReturn => {
       });
       if (!res.ok) throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
       const updatedCitizen: CitizenAddType = await res.json();
-      setCitizens((prev) => ({data: prev.data.map((citizen) => (citizen.id === id ? updatedCitizen.data : citizen)), message: updatedCitizen.message, total: prev.total}));
+      setCitizens((prev) => ({data: prev.data.map((citizen) => (citizen.id.toString() === id ? updatedCitizen.data : citizen)), message: updatedCitizen.message, total: prev.total}));
     } catch (err: any) {
       setError(err);
     }
   };
 
   // Supprimer un citoyen
-  const deleteCitizen = async (id: number) => {
+  const deleteCitizen = async (id: string) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/citizen/${id}`, {
@@ -80,7 +80,7 @@ const useCitizens = (): UseCitizensReturn => {
       });
       if (!res.ok) throw new Error(`Erreur lors de la suppression : ${res.status}`);
       const messageDeletedCitizen : Omit<CitizenAddType, 'data'> = await res.json();
-      setCitizens((prev) => ({data: prev.data.filter((citizen) => citizen.id !== id), message: messageDeletedCitizen.message, total: prev.total - 1}));
+      setCitizens((prev) => ({data: prev.data.filter((citizen) => citizen.id.toString() !== id), message: messageDeletedCitizen.message, total: prev.total - 1}));
     } catch (err: any) {
       setError(err);
     }

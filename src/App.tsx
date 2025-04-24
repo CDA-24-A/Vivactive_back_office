@@ -10,6 +10,7 @@ import Resource from "./pages/resource";
 import Login from "./pages/login";
 import Category from "./pages/category";
 import StatsPage from "./pages/dashbord";
+import ResourceType from "./pages/resourceType";
 
 function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -21,13 +22,13 @@ function App() {
   return (
     <div className="app" style={{ height: `calc(100vh - ${headerHeight}px)` }}>
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route path="/citizens" element={<Index />} />
         <Route path="/resources" element={<Resource />} />
         <Route path="*" element={<Erreur404 />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<StatsPage />} />
-        <Route path="/dashboards" element={<StatsPage />} />
         <Route path="/categories" element={<Category />} />
+        <Route path="/resource-types" element={<ResourceType />} />
       </Routes>
     </div>
   );

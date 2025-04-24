@@ -5,11 +5,12 @@ import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import { useState } from "react";
-import { Citizen } from "../types/citizen";
+import { CitizenType } from "../types/citizen";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
+import { FormSchema } from "../validation/citizenValidation";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -43,7 +44,7 @@ const Index = () => {
   const [count, setCount] = useState<number>(1);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
   const [search, setSearch] = useState<string>("");
-  const [citizensFiltered, setCitiensFiltered] = useState<Citizen[]>([]);
+  const [citizensFiltered, setCitiensFiltered] = useState<CitizenType[]>([]);
 
   const debouncedSearch = useDebounce(search, 500);
 
@@ -115,7 +116,7 @@ const Index = () => {
     setOpen(true);
   };
 
-  const handleSubmitClick = (data: Citizen) => {
+  const handleSubmitClick = (data: CitizenType) => {
     if (data.id) {
       updateCitizen(data.id, { ...data, roleId: "7d725762-d488-4238-9414-cc70ec24a6f5" });
     } else {
@@ -124,7 +125,7 @@ const Index = () => {
     handleCloseModal();
   };
 
-  const handleDeleteClick = (id: number) => {
+  const handleDeleteClick = (id: string) => {
     deleteCitizen(id);
     handleCloseModal();
   };
@@ -193,6 +194,7 @@ const Index = () => {
 
           <ModalEdition
             open={open}
+            FormSchema={FormSchema}
             onClose={() => handleCloseModal()}
             title={formData ? "Modifier un citoyen" : "Créer un citoyen"}
             fields={createCitizenFormConfig}

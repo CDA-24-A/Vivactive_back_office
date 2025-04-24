@@ -1,7 +1,7 @@
 import { RoleType } from "./role";
 
 export interface CitizenType {
-    id: number;
+    id: string;
     name: string;
     email: string;
     surname: string;

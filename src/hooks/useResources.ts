@@ -8,10 +8,10 @@ interface UseResourcesReturn {
   loading: boolean;
   error: Error | null;
   fetchResources: ({page, perPage}: {page?: number, perPage?: number}) => Promise<void>;
-  fetchResource: (id: number) => Promise<ResourceType>;
+  fetchResource: (id: string) => Promise<ResourceType>;
   createResource: (newResource: Omit<ResourceType, 'id'>) => Promise<ResourceType>;
-  updateResource: (id: number, updatedFields: Partial<ResourceType>) => Promise<ResourceType>;
-  deleteResource: (id: number) => Promise<void>;
+  updateResource: (id: string, updatedFields: Partial<ResourceType>) => Promise<ResourceType>;
+  deleteResource: (id: string) => Promise<void>;
 }
 
 const useResources = (): UseResourcesReturn => {
@@ -40,7 +40,7 @@ const useResources = (): UseResourcesReturn => {
     }
   };
 
-  const fetchResource = async (id: number): Promise<ResourceType> => {
+  const fetchResource = async (id: string): Promise<ResourceType> => {
     setLoading(true);
     setError(null);
     try {
@@ -77,7 +77,7 @@ const useResources = (): UseResourcesReturn => {
   };
 
   // Mettre à jour un citoyen
-  const updateResource = async (id: number, updatedFields: Partial<ResourceType>): Promise<ResourceType> => {
+  const updateResource = async (id: string, updatedFields: Partial<ResourceType>): Promise<ResourceType> => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/Ressource/${id}`, {
@@ -87,7 +87,7 @@ const useResources = (): UseResourcesReturn => {
       });
       if (!res.ok) throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
       const updatedResource: ResourceAddType = await res.json();
-      setResources((prev) => ({data: prev.data.map((resource) => (resource.id === id ? updatedResource.data : resource)), message: updatedResource.message, total: prev.total}));
+      setResources((prev) => ({data: prev.data.map((resource) => (resource.id.toString() === id ? updatedResource.data : resource)), message: updatedResource.message, total: prev.total}));
       return updatedResource.data;
     } catch (err: any) {
       setError(err);
@@ -96,7 +96,7 @@ const useResources = (): UseResourcesReturn => {
   };
 
   // Supprimer un citoyen
-  const deleteResource = async (id: number) => {
+  const deleteResource = async (id: string) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/Ressource/${id}`, {
@@ -104,7 +104,7 @@ const useResources = (): UseResourcesReturn => {
       });
       if (!res.ok) throw new Error(`Erreur lors de la suppression : ${res.status}`);
       const messageDeletedResource : Omit<ResourceAddType, 'data'> = await res.json();
-      setResources((prev) => ({data: prev.data.filter((resource) => resource.id !== id), message: messageDeletedResource.message, total: prev.total - 1}));
+      setResources((prev) => ({data: prev.data.filter((resource) => resource.id.toString() !== id), message: messageDeletedResource.message, total: prev.total - 1}));
     } catch (err: any) {
       setError(err);
     }

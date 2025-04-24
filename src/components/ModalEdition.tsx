@@ -51,7 +51,11 @@ export interface FieldConfig {
     | "typeRessourceId"
     | "name"
     | "email"
-    | "password";
+    | "password"
+    | "roleId"
+    | "surname"
+    | "bannerId"
+    | "fileId";
   label: string;
   type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "date" | "checkbox" | "textArea";
   defaultValue?: string | number;
@@ -185,7 +189,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
             return (
               <Controller
                 key={field.name}
-                name={field.name as keyof FormSchemaType}
+                name={field.name as unknown as string}
                 control={control}
                 defaultValue={
                   field.type === "dropdown"
@@ -263,12 +267,12 @@ const GenericModal: React.FC<GenericModalProps> = ({
                         )} */}
                       </>
                     )}
-                    {/* {field.name === "isValidate" && (
+                    {field.name === "isValidate" && (
                       <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
                         <Typography>{field.label}</Typography>
                         <input type="checkbox" {...register("isValidate")} style={{ marginLeft: "8px" }} />
                       </Box>
-                    )} */}
+                    )}
                   </Box>
                 )}
               />
@@ -312,10 +316,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
                         control={control}
                         defaultValue={step.order}
                         render={({ field: ctrl }) => (
-                          <div>
-                            {index}
-                            <TextField {...ctrl} type="number" variant="standard" sx={{ width: "30px" }} onChange={(e) => ctrl.onChange(e.target.value)} />
-                          </div>
+                          <TextField {...ctrl} type="number" variant="standard" sx={{ width: "30px" }} onChange={(e) => ctrl.onChange(e.target.value)} />
                         )}
                       />
                     </Box>
