@@ -1,51 +1,37 @@
-import { createTheme } from '@mui/material/styles';
-import { frFR } from '@mui/material/locale';
+import { createTheme } from "@mui/material/styles";
+import { frFR } from "@mui/material/locale";
 
 const theme = createTheme(
   {
     palette: {
-      mode: 'light',
-      primary: { main: '#00829f' },
-      secondary: { main: '#7C93F9' },
-      text: { primary: '#1A1A1A', secondary: '#4B5563' },
+      mode: "light",
+      primary: { main: "#00949F" },
+      secondary: { main: "#7C93F9" },
+      text: { primary: "#1A1A1A", secondary: "#4B5563" },
     },
     typography: {
-      // Police par défaut pour le corps de texte
-      fontFamily: 'Inter, Roboto, sans-serif',
+      // Police par défaut
+      fontFamily: "Roboto, Inter, sans-serif",
 
-      // On redéfinit Montserrat pour les titres
+      // Tu peux aussi isoler les titres si tu veux
       h1: {
-        fontFamily: 'Montserrat, sans-serif',
-        fontWeight: 700,
-        fontSize: '2.5rem',
+        fontFamily: "Fredoka, sans-serif",
+        fontWeight: 500,
+        fontSize: "2.5rem",
       },
       h2: {
-        fontFamily: 'Montserrat, sans-serif',
-        fontWeight: 600,
-        fontSize: '2rem',
+        fontFamily: "Fredoka, sans-serif",
+        fontWeight: 400,
+        fontSize: "2rem",
       },
       h3: {
-        fontFamily: 'Montserrat, sans-serif',
+        fontFamily: "Fredoka, sans-serif",
         fontWeight: 500,
-        fontSize: '1.75rem',
+        fontSize: "1.75rem",
       },
-      h4: {
-        fontFamily: 'Montserrat, sans-serif',
-        fontWeight: 500,
-        fontSize: '1.5rem',
-      },
-      h5: {
-        fontFamily: 'Montserrat, sans-serif',
-        fontWeight: 400,
-        fontSize: '1.25rem',
-      },
-      h6: {
-        fontFamily: 'Montserrat, sans-serif',
-        fontWeight: 400,
-        fontSize: '1rem',
-      },
+      // etc. pour h4,h5,h6…
       body1: {
-        fontSize: '1rem',
+        fontSize: "1rem",
       },
     },
     shape: {
@@ -55,7 +41,7 @@ const theme = createTheme(
       MuiButton: {
         styleOverrides: {
           root: {
-            textTransform: 'none',
+            textTransform: "none",
             borderRadius: 8,
           },
         },
@@ -64,10 +50,10 @@ const theme = createTheme(
         styleOverrides: {
           root: {
             borderRadius: 8,
-            color: '#ffffff',
-            '&:hover': {
-              backgroundColor: '#fff',
-              color: '#00779f',
+            color: "#ffffff",
+            "&:hover": {
+              backgroundColor: "#fff",
+              color: "#00949F",
             },
           },
         },
