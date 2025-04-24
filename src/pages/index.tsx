@@ -1,10 +1,9 @@
 import useCitizens from "../hooks/useCitizens";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Box, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
-import { useState } from "react";
 import { CitizenType } from "../types/citizen";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
@@ -12,6 +11,7 @@ import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
 import useRoles from "../hooks/useRoles";
 import { FormSchema } from "../validation/citizenValidation";
+import { useUser } from "@clerk/clerk-react";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -38,7 +38,8 @@ const columns: GridColDef[] = [
 ];
 
 const Index = () => {
-  const { fetchCitizens, citizens, loading, error, createCitizen, updateCitizen, deleteCitizen } = useCitizens();
+  const { user } = useUser();
+  const { fetchCitizens, citizens, loading, error, createCitizen, updateCitizen, deleteCitizen, fetchCitizenActive } = useCitizens();
   const { fetchRoles, roles } = useRoles();
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
@@ -98,6 +99,25 @@ const Index = () => {
     },
   ];
 
+  // Récupération du rôle utilisateur et log si USER
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.id) {
+        try {
+          const citizen = await fetchCitizenActive(user.id);
+          if (citizen?.role?.name === "USER" || citizen?.role?.name === "MODERATOR") {
+            console.log("Rôle détecté : USER");
+            window.location.href = "/401";
+          }
+        } catch (error) {
+          console.error("Erreur lors de la récupération du citoyen actif :", error);
+        }
+      }
+    };
+
+    fetchUserRole();
+  }, [user]);
+
   useEffect(() => {
     fetchCitizens({ page: page, perPage: perPage });
   }, [perPage, page]);
@@ -150,21 +170,15 @@ const Index = () => {
             columns={columns}
             loading={loading}
             hideFooter={true}
-            onRowDoubleClick={(params) => {
-              handleRowDoubleClick(params);
-            }}
+            onRowDoubleClick={(params) => handleRowDoubleClick(params)}
           />
           <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginTop: "20px" }}>
             <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "flex", flexDirection: "row" }}>
               <InputLabel variant="outlined">Ligne par page</InputLabel>
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
                 value={perPage}
-                label="Ligne par page"
-                sx={{ width: "100%" }}
-                onChange={(data: any) => {
-                  setPerPage(parseInt(data.target.value));
+                onChange={(e: any) => {
+                  setPerPage(parseInt(e.target.value));
                   setPage(1);
                 }}
               >
@@ -175,23 +189,13 @@ const Index = () => {
               </Select>
             </FormControl>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Button
-                onClick={() => {
-                  setPage(page - 1);
-                }}
-                disabled={page === 1}
-              >
+              <Button onClick={() => setPage(page - 1)} disabled={page === 1}>
                 -
               </Button>
               <Typography>
                 {page} sur {count}
               </Typography>
-              <Button
-                onClick={() => {
-                  setPage(page + 1);
-                }}
-                disabled={page === count}
-              >
+              <Button onClick={() => setPage(page + 1)} disabled={page === count}>
                 +
               </Button>
             </Box>
@@ -203,16 +207,15 @@ const Index = () => {
             onClose={() => handleCloseModal()}
             title={formData ? "Modifier un citoyen" : "Créer un citoyen"}
             fields={createCitizenFormConfig}
-            onSubmit={(data) => handleSubmitClick(data)}
+            onSubmit={handleSubmitClick}
             initialData={formData}
             TransitionProps={{ onExited: () => setFormData(null) }}
-            onDelete={(id) => {
-              handleDeleteClick(id);
-            }}
+            onDelete={(id) => handleDeleteClick(id)}
           />
         </Box>
       )}
     </Box>
   );
 };
+
 export default Index;

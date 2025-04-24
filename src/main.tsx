@@ -7,8 +7,10 @@ import Header from "./components/header.tsx";
 import Navigation from "./components/navigation.tsx";
 import { ThemeProvider } from "@mui/material";
 import theme from "./theme.ts";
+import { ClerkProvider } from "@clerk/clerk-react";
 
-// Crée un wrapper pour utiliser useLocation ici
+const clerkKey = import.meta.env.VITE_PUBLIC_CLERK_PUBLISHABLE_KEY;
+console.log(clerkKey);
 function AppWithLayout() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
@@ -25,11 +27,13 @@ function AppWithLayout() {
 }
 
 createRoot(document.getElementById("root")!).render(
-  // <StrictMode>
-  <ThemeProvider theme={theme}>
-    <BrowserRouter>
-      <AppWithLayout />
-    </BrowserRouter>
-  </ThemeProvider>
-  // </StrictMode>
+  <StrictMode>
+    <ClerkProvider publishableKey={clerkKey}>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <AppWithLayout />
+        </BrowserRouter>
+      </ThemeProvider>
+    </ClerkProvider>
+  </StrictMode>
 );

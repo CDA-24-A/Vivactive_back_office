@@ -12,6 +12,8 @@ import Login from "./pages/login";
 import Category from "./pages/category";
 import StatsPage from "./pages/dashbord";
 import ResourceType from "./pages/resourceType";
+import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
+import Erreur401 from "./pages/Error401";
 
 function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -31,6 +33,21 @@ function App() {
         <Route path="/dashboard" element={<StatsPage />} />
         <Route path="/categories" element={<Category />} />
         <Route path="/resource-types" element={<ResourceType />} />
+        <Route
+          path="/"
+          element={
+            <>
+              <SignedIn>
+                <Resource />
+              </SignedIn>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
+            </>
+          }
+        />
+        <Route path="*" element={<Erreur404 />} />
+        <Route path="/401" element={<Erreur401 />} />
       </Routes>
     </div>
   );
