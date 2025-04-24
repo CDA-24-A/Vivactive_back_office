@@ -6,7 +6,7 @@ interface UseResourcesTypeReturn {
   resourcesType: ResourcesType;
   loading: boolean;
   error: Error | null;
-  fetchResourcesType: () => Promise<void>;
+  fetchResourcesType: ({ page, perPage }: { page?: number; perPage?: number }) => Promise<void>;
   createResourceType: (newResourceType: Omit<ResourceTypeType, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   updateResourceType: (id: number, updatedFields: Partial<ResourceTypeType>) => Promise<void>;
   deleteResourceType: (id: number) => Promise<void>;

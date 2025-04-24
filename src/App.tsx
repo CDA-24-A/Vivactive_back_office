@@ -8,7 +8,6 @@ import Index from "./pages";
 import Erreur404 from "./pages/erreur404";
 import Resource from "./pages/resource";
 import Login from "./pages/login";
-import ResourceType from "./pages/resourceType";
 import Category from "./pages/category";
 import StatsPage from "./pages/dashbord";
 
@@ -28,7 +27,7 @@ function App() {
         <Route path="*" element={<Erreur404 />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<StatsPage />} />
-        <Route path="/resource-types" element={<ResourceType />} />
+        <Route path="/dashboards" element={<StatsPage />} />
         <Route path="/categories" element={<Category />} />
       </Routes>
     </div>
