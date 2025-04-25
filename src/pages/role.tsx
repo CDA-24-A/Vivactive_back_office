@@ -9,6 +9,9 @@ import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
+import useCitizens from "../hooks/useCitizens";
+import { useUser } from "@clerk/clerk-react";
+
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -16,6 +19,9 @@ const columns: GridColDef[] = [
 ];
 
 const Role = () => {
+  const { citizens, fetchCitizenActive } = useCitizens();
+  const { user } = useUser();
+
   const { fetchRoles, roles, loading, error, createRole, updateRole, deleteRole } = useRoles();
   const [open, setOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
@@ -33,6 +39,25 @@ const Role = () => {
   //     showOn: "always",
   //   },
   // ];
+
+    // Récupération du rôle utilisateur et log si USER
+    useEffect(() => {
+      const fetchUserRole = async () => {
+        if (user?.id) {
+          try {
+            const citizen = await fetchCitizenActive(user.id);
+            if (citizen?.role?.name === "USER" || citizen?.role?.name === "MODERATOR") {
+              console.log("Rôle détecté : USER");
+              window.location.href = "/401";
+            }
+          } catch (error) {
+            console.error("Erreur lors de la récupération du citoyen actif :", error);
+          }
+        }
+      };
+  
+      fetchUserRole();
+    }, [user]);
 
   useEffect(() => {
     fetchRoles();

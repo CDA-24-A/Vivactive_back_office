@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Grid, Card, CardContent, Typography, Button, CircularProgress } from "@mui/material";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { useUser } from "@clerk/clerk-react";
 
 import useCitizens from "../hooks/useCitizens";
 import useResources from "../hooks/useResources";
@@ -13,10 +14,31 @@ interface StatsData {
 const COLORS = ["#8884d8", "#82ca9d"];
 
 const StatsPage: React.FC = () => {
-  const { fetchCitizens, citizens } = useCitizens();
+  const { fetchCitizens, citizens, fetchCitizenActive } = useCitizens();
   const { fetchResources, resources } = useResources();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useUser();
+
+
+    // Récupération du rôle utilisateur et log si USER
+    useEffect(() => {
+      const fetchUserRole = async () => {
+        if (user?.id) {
+          try {
+            const citizen = await fetchCitizenActive(user.id);
+            if (citizen?.role?.name === "USER" || citizen?.role?.name === "MODERATOR") {
+              console.log("Rôle détecté : USER");
+              window.location.href = "/401";
+            }
+          } catch (error) {
+            console.error("Erreur lors de la récupération du citoyen actif :", error);
+          }
+        }
+      };
+  
+      fetchUserRole();
+    }, [user]);
 
   useEffect(() => {
     // on récupère seulement les totaux
