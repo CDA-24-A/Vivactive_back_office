@@ -210,6 +210,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
                           select={field.type === "dropdown"}
                           type={type}
                           multiline={field.type === "textArea"}
+                          disabled={field.isDisabled}
                           fullWidth
                           variant="outlined"
                           error={!!error}
