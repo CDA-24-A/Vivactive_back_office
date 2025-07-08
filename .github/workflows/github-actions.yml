@@ -26,25 +26,27 @@ jobs:
     needs:
       - lint
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
       - name: Restore cache
         uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+
       - run: echo "Lancement des étapes de construction"
-      - name: Check out repository code
-        uses: actions/checkout@v4
-      - run: echo "Le code du dépôt a été cloné sur le serveur d'exécution."
+      - run: npm ci
+      - run: npm run build
+
       - name: Save cache (node_modules)
         uses: actions/cache/save@v4
         with:
-          path: |
-            node_modules
-            /home/runner/.cache/Cypress
+          path: node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
-      - run: npm ci
-      - run: npm run build
+
       - run: echo "🏁 Étapes de construction terminées"
+
 
   build-push-docker :
     runs-on: ubuntu-latest
