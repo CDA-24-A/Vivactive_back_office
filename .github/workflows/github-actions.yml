@@ -43,7 +43,8 @@ jobs:
             node_modules
             /home/runner/.cache/Cypress
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
-      - run : echo "🏁 Étapes de construction terminées"
+      - run: npm ci
+      - run: echo "🏁 Étapes de construction terminées"
 
   build-push-docker :
     runs-on: ubuntu-latest
