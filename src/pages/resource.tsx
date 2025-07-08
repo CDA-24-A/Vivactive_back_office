@@ -17,7 +17,6 @@ import { FormSchema } from "../validation/resourceValidation";
 import useCitizens from "../hooks/useCitizens";
 import { useUser } from "@clerk/clerk-react";
 
-
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
   { field: "title", headerName: "Titre", width: 130 },
@@ -62,7 +61,6 @@ const Index = () => {
   const { fetchCitizenActive } = useCitizens();
   const { user } = useUser();
 
-
   const { fetchResources, resources, loading, error, createResource, updateResource, deleteResource, fetchResource, validateResource } = useResources();
   const { fetchCategories, categories } = useCategory();
   const { fetchResourcesType, resourcesType } = useResourcesType();
@@ -73,8 +71,6 @@ const Index = () => {
   const [resourcesFiltered, setResourcesFiltered] = useState<ResourceType[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const [banner, setBanner] = useState<File | null>(null);
 
   const ressourceFormConfig: FieldConfig[] = [
     { name: "title", label: "Titre", type: "text", validation: { required: "Le titre est requis" }, showOn: "always" },
@@ -111,24 +107,24 @@ const Index = () => {
 
   const debouncedSearch = useDebounce(search, 500);
 
-    // Récupération du rôle utilisateur et log si USER
-    useEffect(() => {
-      const fetchUserRole = async () => {
-        if (user?.id) {
-          try {
-            const citizen = await fetchCitizenActive(user.id);
-            if (citizen?.role?.name === "USER") {
-              console.log("Rôle détecté : USER");
-              window.location.href = "/401";
-            }
-          } catch (error) {
-            console.error("Erreur lors de la récupération du citoyen actif :", error);
+  // Récupération du rôle utilisateur et log si USER
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.id) {
+        try {
+          const citizen = await fetchCitizenActive(user.id);
+          if (citizen?.role?.name === "USER") {
+            console.log("Rôle détecté : USER");
+            window.location.href = "/401";
           }
+        } catch (error) {
+          console.error("Erreur lors de la récupération du citoyen actif :", error);
         }
-      };
-  
-      fetchUserRole();
-    }, [user]);
+      }
+    };
+
+    fetchUserRole();
+  }, [user]);
 
   useEffect(() => {
     fetchCategories();
@@ -170,7 +166,7 @@ const Index = () => {
 
   const handleSubmitClick = (data: ResourceType) => {
     if (data.id) {
-      const { step, ...rest } = data;
+      const { ...rest } = data;
       if (data.isValidate) validateResource(data.id.toString());
       updateResource(data.id.toString(), {
         ...rest,
@@ -196,14 +192,6 @@ const Index = () => {
 
   const handleCloseModal = () => {
     setOpen(false);
-  };
-
-  const handleFileChange = (data: File) => {
-    setFile(data);
-  };
-
-  const handleBannerChange = (data: File) => {
-    setBanner(banner);
   };
 
   return (
@@ -275,8 +263,6 @@ const Index = () => {
             onDelete={(id) => {
               handleDeleteClick(id);
             }}
-            onSubmitFile={(data) => handleFileChange(data)}
-            onSubmitBanner={(data) => handleBannerChange(data)}
             interfaceActive="resource"
           />
         </Box>

@@ -20,32 +20,31 @@ const Index = () => {
   const { fetchCitizenActive } = useCitizens();
   const { user } = useUser();
 
-
   const { fetchResourcesType, resourcesType, loading, error } = useTypeResources();
   const [search, setSearch] = useState<string>("");
   const [typeResourcesFiltered, setCitiensFiltered] = useState<ResourceTypeType[]>([]);
 
   const debouncedSearch = useDebounce(search, 500);
 
-    // Récupération du rôle utilisateur et log si USER
-    useEffect(() => {
-      const fetchUserRole = async () => {
-        if (user?.id) {
-          try {
-            const citizen = await fetchCitizenActive(user.id);
-            if (citizen?.role?.name === "USER") {
-              console.log("Rôle détecté : USER");
-              window.location.href = "/401";
-            }
-          } catch (error) {
-            console.error("Erreur lors de la récupération du citoyen actif :", error);
+  // Récupération du rôle utilisateur et log si USER
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.id) {
+        try {
+          const citizen = await fetchCitizenActive(user.id);
+          if (citizen?.role?.name === "USER") {
+            console.log("Rôle détecté : USER");
+            window.location.href = "/401";
           }
+        } catch (error) {
+          console.error("Erreur lors de la récupération du citoyen actif :", error);
         }
-      };
-  
-      fetchUserRole();
-    }, [user]);
-  
+      }
+    };
+
+    fetchUserRole();
+  }, [user]);
+
   useEffect(() => {
     fetchResourcesType();
   }, []);
@@ -61,7 +60,7 @@ const Index = () => {
       {!loading && !error && (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
           <HeaderGrid title="Liste des types de ressources" searchValue={search} onSearchChange={setSearch} />
-          <GridComponent rows={typeResourcesFiltered} columns={columns} loading={loading} hideFooter={true} onRowDoubleClick={(params) => {}} />
+          <GridComponent rows={typeResourcesFiltered} columns={columns} loading={loading} hideFooter={true} />
         </Box>
       )}
     </Box>

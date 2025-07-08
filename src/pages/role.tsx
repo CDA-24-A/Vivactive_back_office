@@ -2,16 +2,14 @@ import useRoles from "../hooks/useRoles";
 import { useEffect } from "react";
 import { Box } from "@mui/material";
 import GridComponent from "../components/Grid";
-import { GridColDef, GridRowParams } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
 import { RoleType } from "../types/role";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
-import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
 import useCitizens from "../hooks/useCitizens";
 import { useUser } from "@clerk/clerk-react";
-
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -19,12 +17,10 @@ const columns: GridColDef[] = [
 ];
 
 const Role = () => {
-  const { citizens, fetchCitizenActive } = useCitizens();
+  const { fetchCitizenActive } = useCitizens();
   const { user } = useUser();
 
-  const { fetchRoles, roles, loading, error, createRole, updateRole, deleteRole } = useRoles();
-  const [open, setOpen] = useState<boolean>(false);
-  const [formData, setFormData] = useState<GridRowParams | null>(null);
+  const { fetchRoles, roles, loading, error } = useRoles();
   const [search, setSearch] = useState<string>("");
   const [rolesFiltered, setRolesFiltered] = useState<RoleType[]>([]);
 
@@ -40,24 +36,24 @@ const Role = () => {
   //   },
   // ];
 
-    // Récupération du rôle utilisateur et log si USER
-    useEffect(() => {
-      const fetchUserRole = async () => {
-        if (user?.id) {
-          try {
-            const citizen = await fetchCitizenActive(user.id);
-            if (citizen?.role?.name === "USER" || citizen?.role?.name === "MODERATOR") {
-              console.log("Rôle détecté : USER");
-              window.location.href = "/401";
-            }
-          } catch (error) {
-            console.error("Erreur lors de la récupération du citoyen actif :", error);
+  // Récupération du rôle utilisateur et log si USER
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.id) {
+        try {
+          const citizen = await fetchCitizenActive(user.id);
+          if (citizen?.role?.name === "USER" || citizen?.role?.name === "MODERATOR") {
+            console.log("Rôle détecté : USER");
+            window.location.href = "/401";
           }
+        } catch (error) {
+          console.error("Erreur lors de la récupération du citoyen actif :", error);
         }
-      };
-  
-      fetchUserRole();
-    }, [user]);
+      }
+    };
+
+    fetchUserRole();
+  }, [user]);
 
   useEffect(() => {
     fetchRoles();
@@ -67,31 +63,6 @@ const Role = () => {
     const filtered = roles.data.filter((c) => `${c.name}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
     setRolesFiltered(filtered);
   }, [debouncedSearch, roles]);
-
-  // const handleRowDoubleClick = (rowData: any) => {
-  //   setFormData(rowData);
-  //   setOpen(true);
-  // };
-
-  // const handleSubmitClick = (data: RoleType) => {
-  //   console.log("data", data);
-  //   if (data.id) {
-  //     updateRole(data.id, data);
-  //   } else {
-  //     createRole(data);
-  //   }
-  //   handleCloseModal();
-  // };
-
-  // const handleDeleteClick = (id: string) => {
-  //   deleteRole(id);
-  //   handleCloseModal();
-  // };
-
-  const handleCloseModal = () => {
-    setFormData(null);
-    setOpen(false);
-  };
 
   return (
     <Box sx={{ width: "100%", display: "flex", flexDirection: "column", height: "100%" }}>

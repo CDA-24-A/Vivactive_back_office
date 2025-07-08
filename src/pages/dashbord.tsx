@@ -1,50 +1,40 @@
-import React, { useEffect, useState } from "react";
-import { Box, Grid, Card, CardContent, Typography, Button, CircularProgress } from "@mui/material";
+import React, { useEffect } from "react";
+import { Box, Grid, Card, CardContent, Typography, Button } from "@mui/material";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { useUser } from "@clerk/clerk-react";
 
 import useCitizens from "../hooks/useCitizens";
 import useResources from "../hooks/useResources";
 
-interface StatsData {
-  citizensCount: number;
-  resourcesCount: number;
-}
-
 const COLORS = ["#8884d8", "#82ca9d"];
 
 const StatsPage: React.FC = () => {
   const { fetchCitizens, citizens, fetchCitizenActive } = useCitizens();
   const { fetchResources, resources } = useResources();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { user } = useUser();
 
-
-    // Récupération du rôle utilisateur et log si USER
-    useEffect(() => {
-      const fetchUserRole = async () => {
-        if (user?.id) {
-          try {
-            const citizen = await fetchCitizenActive(user.id);
-            if (citizen?.role?.name === "USER" || citizen?.role?.name === "MODERATOR") {
-              console.log("Rôle détecté : USER");
-              window.location.href = "/401";
-            }
-          } catch (error) {
-            console.error("Erreur lors de la récupération du citoyen actif :", error);
+  // Récupération du rôle utilisateur et log si USER
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.id) {
+        try {
+          const citizen = await fetchCitizenActive(user.id);
+          if (citizen?.role?.name === "USER" || citizen?.role?.name === "MODERATOR") {
+            console.log("Rôle détecté : USER");
+            window.location.href = "/401";
           }
+        } catch (error) {
+          console.error("Erreur lors de la récupération du citoyen actif :", error);
         }
-      };
-  
-      fetchUserRole();
-    }, [user]);
+      }
+    };
+
+    fetchUserRole();
+  }, [user]);
 
   useEffect(() => {
     // on récupère seulement les totaux
-    Promise.all([fetchCitizens({ page: 1, perPage: 1 }), fetchResources({ page: 1, perPage: 1 })])
-      .catch((err) => setError(err.message || "Erreur réseau"))
-      .finally(() => setLoading(false));
+    Promise.all([fetchCitizens({ page: 1, perPage: 1 }), fetchResources({ page: 1, perPage: 1 })]);
   }, [fetchCitizens, fetchResources]);
 
   // Prépare les données pour le camembert
@@ -112,7 +102,7 @@ const StatsPage: React.FC = () => {
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
-                    {pieData.map((entry, index) => (
+                    {pieData.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>

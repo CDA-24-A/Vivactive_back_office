@@ -14,7 +14,6 @@ import { FormSchema } from "../validation/categoryValidation";
 import { useUser } from "@clerk/clerk-react";
 import useCitizens from "../hooks/useCitizens";
 
-
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
   { field: "name", headerName: "Nom", width: 130 },
@@ -22,9 +21,8 @@ const columns: GridColDef[] = [
 ];
 
 const Index = () => {
-  const { fetchCitizens, citizens, fetchCitizenActive } = useCitizens();
+  const { fetchCitizenActive } = useCitizens();
   const { user } = useUser();
-
 
   const { fetchCategories, categories, loading, error, createCategory, updateCategory, deleteCategory } = useCategories();
   const [search, setSearch] = useState<string>("");
@@ -53,24 +51,24 @@ const Index = () => {
     },
   ];
 
-      // Récupération du rôle utilisateur et log si USER
-      useEffect(() => {
-        const fetchUserRole = async () => {
-          if (user?.id) {
-            try {
-              const citizen = await fetchCitizenActive(user.id);
-              if (citizen?.role?.name === "USER") {
-                console.log("Rôle détecté : USER");
-                window.location.href = "/401";
-              }
-            } catch (error) {
-              console.error("Erreur lors de la récupération du citoyen actif :", error);
-            }
+  // Récupération du rôle utilisateur et log si USER
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.id) {
+        try {
+          const citizen = await fetchCitizenActive(user.id);
+          if (citizen?.role?.name === "USER") {
+            console.log("Rôle détecté : USER");
+            window.location.href = "/401";
           }
-        };
-    
-        fetchUserRole();
-      }, [user]);
+        } catch (error) {
+          console.error("Erreur lors de la récupération du citoyen actif :", error);
+        }
+      }
+    };
+
+    fetchUserRole();
+  }, [user]);
 
   useEffect(() => {
     fetchCategories();

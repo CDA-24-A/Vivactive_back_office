@@ -1,6 +1,6 @@
 // src/hooks/useComments.ts
 import { useState } from 'react';
-import { CommentAddType, CommentsType } from '../types/comment';
+import {  CommentsType } from '../types/comment';
 
 interface UseCommentsReturn {
   comments: CommentsType;
@@ -14,7 +14,7 @@ const useComments = (): UseCommentsReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const [comments, setComments] = useState<CommentsType>({
     data: [],
-  message: '',
+    message: '',
 });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -43,7 +43,7 @@ const useComments = (): UseCommentsReturn => {
         method: 'DELETE'
       });
       if (!res.ok) throw new Error(`Erreur lors de la suppression : ${res.status}`);
-      const messageDeletedComment : Omit<CommentAddType, 'data'> = await res.json();
+      const messageDeletedComment : Omit<CommentsType, 'data'> = await res.json();
       setComments((prev) => ({data: prev.data.filter((comment) => comment.id !== id), message: messageDeletedComment.message}));
     } catch (err: any) {
       setError(err);

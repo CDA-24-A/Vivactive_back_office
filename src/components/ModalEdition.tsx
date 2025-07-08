@@ -11,7 +11,6 @@ import {
   TextField,
   IconButton,
   InputAdornment,
-  Select,
   MenuItem,
   InputLabel,
   Typography,
@@ -54,7 +53,8 @@ export interface FieldConfig {
     | "roleId"
     | "surname"
     | "bannerId"
-    | "fileId";
+    | "fileId"
+    | "citizen";
   label: string;
   type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "textArea" | "date" | "checkbox" | "textArea";
   defaultValue?: string | number;
@@ -79,7 +79,7 @@ interface GenericModalProps {
   onSubmitFile?: (file: File) => void;
   onSubmitBanner?: (file: File) => void;
   interfaceActive?: string;
-  FormSchema: z.ZodType<any, any>;
+  FormSchema?: z.ZodType<any, any>;
 }
 
 const GenericModal: React.FC<GenericModalProps> = ({
@@ -100,7 +100,9 @@ const GenericModal: React.FC<GenericModalProps> = ({
 
   console.log("isEdit", isEdit, "initialData", initialData);
 
-  type FormSchemaType = z.infer<typeof FormSchema>;
+  const fallbackSchema = z.object({});
+  const effectiveSchema = FormSchema ?? fallbackSchema;
+  type FormSchemaType = z.infer<typeof effectiveSchema>;
 
   const {
     handleSubmit,
@@ -109,7 +111,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
     register,
     formState: { dirtyFields, errors },
   } = useForm({
-    resolver: zodResolver(FormSchema),
+    resolver: zodResolver(effectiveSchema),
     defaultValues: initialData?.row ? initialData.row : {},
   });
 

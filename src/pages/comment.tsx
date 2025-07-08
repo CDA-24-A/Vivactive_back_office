@@ -12,18 +12,16 @@ import { useDebounce } from "../hooks/useDebounce";
 import useCitizens from "../hooks/useCitizens";
 import { useUser } from "@clerk/clerk-react";
 
-
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 100 },
   { field: "title", headerName: "Titre", width: 150 },
   { field: "description", headerName: "Description", width: 750 },
-  { field: "fullName", headerName: "Citoyen", width: 130, valueGetter: (value, row) => `${row.citizen.surname || ""} ${row.citizen.name || ""}` },
+  { field: "fullName", headerName: "Citoyen", width: 130, valueGetter: (_value, row) => `${row.citizen.surname || ""} ${row.citizen.name || ""}` },
 ];
 
 const Comment = () => {
   const { user } = useUser();
   const { fetchCitizenActive } = useCitizens();
-
 
   const { fetchComments, comments, loading, error, deleteComment } = useComments();
   const [open, setOpen] = useState<boolean>(false);
@@ -58,24 +56,24 @@ const Comment = () => {
     },
   ];
 
-      // Récupération du rôle utilisateur et log si USER
-      useEffect(() => {
-        const fetchUserRole = async () => {
-          if (user?.id) {
-            try {
-              const citizen = await fetchCitizenActive(user.id);
-              if (citizen?.role?.name === "USER") {
-                console.log("Rôle détecté : USER");
-                window.location.href = "/401";
-              }
-            } catch (error) {
-              console.error("Erreur lors de la récupération du citoyen actif :", error);
-            }
+  // Récupération du rôle utilisateur et log si USER
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.id) {
+        try {
+          const citizen = await fetchCitizenActive(user.id);
+          if (citizen?.role?.name === "USER") {
+            console.log("Rôle détecté : USER");
+            window.location.href = "/401";
           }
-        };
-    
-        fetchUserRole();
-      }, [user]);
+        } catch (error) {
+          console.error("Erreur lors de la récupération du citoyen actif :", error);
+        }
+      }
+    };
+
+    fetchUserRole();
+  }, [user]);
 
   useEffect(() => {
     fetchComments();
