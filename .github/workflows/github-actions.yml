@@ -1,0 +1,62 @@
+name: 🚀 Build and deploy
+run-name: ${{ github.actor }} is deploying with GitHub Actions 🚀
+on:
+  push:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Lancement des étapes de lint"
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "Le code du dépôt a été cloné sur le serveur d'exécution."
+      - run: npm ci
+      - run: npm run lint
+      - run: echo "🏁 Étapes de lint terminées"
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+    steps:
+      - run: echo "Lancement des étapes de construction"
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "Le code du dépôt a été cloné sur le serveur d'exécution."
+      - run: npm clean-install
+      - run: npm run build
+      - name: Save cache (node_modules)
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules
+            /home/runner/.cache/Cypress
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+      - run : echo "🏁 Étapes de construction terminées"
+
+  build-push-docker :
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'recette')
+    permissions:
+      contents: read
+      packages: write
+    env: 
+      NEST_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_aGVhbHRoeS1waWdlb24tNjUuY2xlcmsuYWNjb3VudHMuZGV2JA
+    needs:
+    - lint
+    steps:
+    - uses: actions/checkout@v4
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{github.actor}}
+        password: ${{secrets.GITHUB_TOKEN}}
+    - name: Build and push docker
+      uses: docker/build-push-action@v6
+      with: 
+        context: .
+        push: true
+        target: vivactive_back_office
+        tags: ghcr.io/cda-24-a/vivactive_back_office/vivactive_back_office:recette
