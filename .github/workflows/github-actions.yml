@@ -11,6 +11,12 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: echo "Le code du dépôt a été cloné sur le serveur d'exécution."
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
       - run: npm ci
       - run: npm run lint
       - run: echo "🏁 Étapes de lint terminées"
@@ -37,14 +43,14 @@ jobs:
 
   build-push-docker :
     runs-on: ubuntu-latest
-    if: contains(github.ref, 'recette')
+    # if: contains(github.ref, 'recette')
     permissions:
       contents: read
       packages: write
     env: 
-      NEST_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_aGVhbHRoeS1waWdlb24tNjUuY2xlcmsuYWNjb3VudHMuZGV2JA
+      VITE_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_PUBLIC_CLERK_PUBLISHABLE_KEY}}
     needs:
-    - lint
+    - build
     steps:
     - uses: actions/checkout@v4
     - name: Login to GitHub Container Registry
