@@ -41,4 +41,4 @@ services:
       database:
         condition: service_healthy  
     env_file:
-      - ../../Vivactive_API/.env.prod  
+      - ../../Vivactive_API/.env.prod
