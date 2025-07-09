@@ -79,7 +79,7 @@ jobs:
     # if: contains(github.ref, 'recette')
     environment:
       name: recette
-      url: ec2-34-233-174-146.compute-1.amazonaws.com
+      url: ec2-184-73-222-153.compute-1.amazonaws.com
     needs:
       - build-push-docker
     steps:
