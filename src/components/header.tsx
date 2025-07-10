@@ -31,6 +31,7 @@ const Header = () => {
       <Toolbar>
         <Box sx={{ flexGrow: 1, margin: "20px 0px" }}>
           <img src="/logo.png" alt="Vivactive Logo" style={{ height: 45 }} />
+          <p>SALUT LES CDA !</p>
         </Box>
 
         {isSignedIn && (
